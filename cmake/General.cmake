@@ -5,6 +5,7 @@ set(General_files
    SAMCEvent
    SAMCConstants
    SAMCManager
+   SAMCPropagator
    #withxycollimator
    )
 set(General_SRCS)

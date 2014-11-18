@@ -8,9 +8,9 @@
 
 #pragma link C++ global fgSAMCManager+;
 #pragma link C++ class  SAMCManager+;
-
 #pragma link C++ class  SAMCEvent+;
 #pragma link C++ class  SAMCMaterial+;
+#pragma link C++ class  SAMCPropagator+;
 
 //#pragma link C++ class SAMCDatabase+;
 //#pragma link C++ class SAMCVariable+;

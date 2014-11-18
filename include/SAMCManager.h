@@ -9,6 +9,7 @@
 #include <iostream>
 #include "TList.h"
 #include "TFile.h"
+#include "TTree.h"
 #include "TKey.h"
 #include "TDirectory.h"
 #include <set>
@@ -17,40 +18,21 @@
 #include "TObjString.h"
 #include "TMultiGraph.h"
 
+/** Manager singleton class.
+ *  
+ */
 class SAMCManager : public TObject {
 
    private:
+
       Int_t   fVerbosity;
 
-   protected:
-
-      SAMCManager();
-
-      static SAMCManager * fgSAMCManager;
-
-   public :
-
-      static SAMCManager * GetManager(){
-         if(!fgSAMCManager) fgSAMCManager = new SAMCManager();
-         return(fgSAMCManager);
-      }
-
-      static SAMCManager * Instance(){
-         if(!fgSAMCManager) fgSAMCManager = new SAMCManager();
-         return(fgSAMCManager);
-      }
-
-      virtual ~SAMCManager();
-
-      Int_t   GetVerbosity(){return fVerbosity;}
-      void    SetVerbosity(Int_t v) {fVerbosity = v;}
-
-      int    fNumberOfEvents;// Number of events simulated
+   public:
+      // Todo: rename all the variables below
 
       //default unit
       //MeV cm g rad
       //cross section output unit = nbarn/sr
-      //
       bool   IsDebug            ;//= false; // output to debugfile
       bool   IsMultiScat        ;//= true;  // enable multi-scattering
       bool   IsEnergyLoss       ;//= false; // enable Energy Loss
@@ -84,7 +66,6 @@ class SAMCManager : public TObject {
       double z0                 ;//= 0;     // target center for generator(cm)
       double T_L                ;//= 0;     // target length for generator(cm)
       double T_H                ;//= 0;     // target height for generator(cm)
-
       double D_x                ;//= 0;     // X offset(in TCS) between TCS and HCS
       double D_y                ;//= 0;     // Y offset(in TCS) between TCS and HCS
       double E0                 ;//= 0.0;   // =incident beam energy for generator (MeV)
@@ -96,6 +77,32 @@ class SAMCManager : public TObject {
       int       fNCuts        ;//= -1;
       int**     fXY           ;//= NULL;
       double**  fLineProperty ;//= NULL;
+
+      int    fNumberOfEvents;// Number of events simulated
+
+      TFile * fOutputFile;
+      TTree * fOutputTree;
+
+   protected:
+
+      SAMCManager();
+      static SAMCManager * fgSAMCManager;
+
+   public :
+
+      static SAMCManager * GetManager(){
+         if(!fgSAMCManager) fgSAMCManager = new SAMCManager();
+         return(fgSAMCManager);
+      }
+      static SAMCManager * Instance(){
+         if(!fgSAMCManager) fgSAMCManager = new SAMCManager();
+         return(fgSAMCManager);
+      }
+
+      virtual ~SAMCManager();
+
+      Int_t   GetVerbosity(){return fVerbosity;}
+      void    SetVerbosity(Int_t v) {fVerbosity = v;}
 
       ClassDef(SAMCManager,0)
 };
