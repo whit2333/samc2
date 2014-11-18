@@ -104,7 +104,7 @@ class SAMCManager : public TObject {
       Int_t   GetVerbosity() const {return fVerbosity;}
       void    SetVerbosity(Int_t v) {fVerbosity = v;}
 
-      Int_t SAMCManager::LoadConfig(const char * filename);
+      Int_t LoadConfig(const char * filename);
 
       ClassDef(SAMCManager,0)
 };

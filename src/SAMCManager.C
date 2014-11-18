@@ -71,7 +71,53 @@ SAMCManager::~SAMCManager(){
 }
 //_____________________________________________________________________________
 Int_t SAMCManager::LoadConfig(const char * filename){
-      fgSAMCManager=0;
+
+   // yaml-cpp library format
+   YAML::Node aNode = YAML::LoadFile("filename");
+
+   fNumberOfEvents    = aNode["Nevents"].as<int>();
+   IsMultiScat        = aNode["debug"]["MS"].as<int>();
+   IsEnergyLoss       = aNode["debug"]["EL"].as<int>();
+   Which_Kin          = aNode["debug"]["PS"].as<int>();
+
+   HRS_L              = aNode["HRS_parameters"]["HRS_length"].as<double>();
+   Q1_Exit_Eff_L      = aNode["HRS_parameters"]["Q1_length"].as<double>();
+   D_Entrance_Eff_L   = aNode["HRS_parameters"]["D_entrance_length"].as<double>();
+   D_Exit_Eff_L       = aNode["HRS_parameters"]["D_exit_legnth"].as<double>();
+   Q3_Entrance_Eff_L  = aNode["HRS_parameters"]["Q3_entrance_length"].as<double>();
+   Q3_Exit_Eff_L      = aNode["HRS_parameters"]["Q3_exit_length"].as<double>();
+   FP_Eff_L           = aNode["HRS_parameters"]["FP_length"].as<double>();
+   Q1_Radius          = aNode["HRS_parameters"]["Q1_radius"].as<double>();
+   D_X_Radius         = aNode["HRS_parameters"]["D_x_radius"].as<double>();
+   D_Y_L              = aNode["HRS_parameters"]["D_y_half_length"].as<double>();
+   Q3_Entrance_Radius = aNode["HRS_parameters"]["Q3_entrance_radius"].as<double>();
+   Q3_Exit_Radius     = aNode["HRS_parameters"]["Q3_exit_radius"].as<double>();
+   VDC_Res_x          = aNode["HRS_parameters"]["WC_resolution_x"].as<double>();
+   VDC_Res_y          = aNode["HRS_parameters"]["WC_resolution_y"].as<double>();
+   VDC_Res_th         = aNode["HRS_parameters"]["WC_resolution_th"].as<double>();
+   VDC_Res_ph         = aNode["HRS_parameters"]["WC_resolution_ph"].as<double>();
+   D_x                = aNode["HRS_parameters"]["D_x"].as<double>();
+   D_y                = aNode["HRS_parameters"]["D_y"].as<double>();
+
+   delta_dp           = aNode["monte_carlo_parameters"]["delta_dp"].as<double>();
+   delta_th           = aNode["monte_carlo_parameters"]["delta_th"].as<double>();
+   delta_ph           = aNode["monte_carlo_parameters"]["delta_ph"].as<double>();
+   Which_Beam_Profile = aNode["monte_carlo_parameters"]["beam_profile"].as<int>();
+   raster_x_size      = aNode["monte_carlo_parameters"]["raster_x"].as<double>();
+   raster_y_size      = aNode["monte_carlo_parameters"]["raster_y"].as<double>();
+   gaus_x_sigma       = aNode["monte_carlo_parameters"]["beam_profile_x"].as<double>();
+   gaus_y_sigma       = aNode["monte_carlo_parameters"]["beam_profile_y"].as<double>();
+   beam_x_center      = aNode["monte_carlo_parameters"]["beam_center_x"].as<double>();
+   beam_y_center      = aNode["monte_carlo_parameters"]["beam_center_y"].as<double>();
+   z0                 = aNode["monte_carlo_parameters"]["target_center_z0"].as<double>();
+   T_L                = aNode["monte_carlo_parameters"]["target_length"].as<double>();
+   T_H                = aNode["monte_carlo_parameters"]["target_height"].as<double>();
+   RfunDB_FileName    = aNode["monte_caralo_parameters"]["run_db_filename"].as<std::string>();
+
+   E0                 = aNode["HRS_settings"]["Es"].as<double>();
+   P0                 = aNode["HRS_settings"]["P0"].as<double>();
+
+   return 0;
 }
 //_____________________________________________________________________________
 
