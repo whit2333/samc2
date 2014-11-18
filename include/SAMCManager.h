@@ -81,6 +81,9 @@ class SAMCManager : public TObject {
       SAMCMaterial fMat2;
       SAMCMaterial fMat3;
       SAMCMaterial fMat4;
+      SAMCMaterial fMat5;
+      SAMCMaterial fMat6;
+
       double fTheta_Target; // target rotation (viewed from above)
 
 

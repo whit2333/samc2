@@ -10,6 +10,7 @@
 #pragma link C++ class  SAMCManager+;
 #pragma link C++ class  SAMCEvent+;
 #pragma link C++ class  SAMCMaterial+;
+#pragma link C++ class  SAMCEventGenerator+;
 #pragma link C++ class  SAMCPropagator+;
 
 //#pragma link C++ class SAMCDatabase+;

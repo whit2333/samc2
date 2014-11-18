@@ -13,15 +13,15 @@ class SAMCMaterial : public TNamed {
       SAMCMaterial(const SAMCMaterial& v) ;
       const SAMCMaterial& operator=(const SAMCMaterial& v) ;
 
-      int    Z;         // Z
-      double A;         // A
-      double M;         // Mass
-      double T;         // Thickness g/cm^2
-      double TR;        // Thickness in Rad_Len
-      double rho;       // density g/cm^3
-      double bt;        // bt
-      double X0;        // Radiation Length g/cm^2
-      double L;         // Length:distance along Z axix in TCS
+      int    fZ;         // Z
+      double fA;         // A
+      double fM;         // Mass
+      double fT;         // Thickness g/cm^2
+      double fTR;        // Thickness in Rad_Len
+      double fDensity;   // density g/cm^3
+      double fbt;        // bt
+      double fX0;        // Radiation Length g/cm^2
+      double fL;         // Length:distance along Z axix in TCS
 
       ClassDef(SAMCMaterial,1)
 };

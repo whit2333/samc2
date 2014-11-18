@@ -31,6 +31,7 @@ class SAMCEvent {
 
       int Process() ;
 
+      void AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin, const SAMCMaterial& );
       void AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin,
                               const double& aX0,
                               const double& arho,

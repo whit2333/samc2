@@ -371,6 +371,8 @@ int main(int argc, char** argv) {
       //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "P0"                , 10 , man->P0                , 8 , "MeV" , 40 , "(HRS Setting Momentum for generator)");
    }
 
+   man->RfunDB_FileName = "";
+
    if ( man->RfunDB_FileName.empty() || man->RfunDB_FileName=="NONE" ) {
       man->fNCuts=0;
    }
@@ -540,6 +542,8 @@ int main(int argc, char** argv) {
    {
       // this is crazy use of inputdata -whit
       j=k;
+
+      // This evnet should be reused!!!
       SAMCEvent* Event   = new SAMCEvent();
       Event->Id          = i;
       Event->E_s         = gRandom->Gaus(E0,E0*3e-5);//beam dispersion is 3e-5
@@ -572,27 +576,34 @@ int main(int argc, char** argv) {
       // This clearly is a bug because the order for the AddOneSAMCMaterial
       // Here this only works if it reads the line from RIGHT to LEFT
       // I am pretty sure this is an undefined behavior for C++
-      while ( atof(inputdata[j].c_str())>=0 ) {
-         Event->AddOneSAMCMaterial(
-               Event->Win_Before_Mag,
-               atof(inputdata[j++].c_str()), //name
-               atof(inputdata[j++].c_str()), // Z
-               atof(inputdata[j++].c_str()), // A
-               atof(inputdata[j++].c_str()), // length
-               atoi(inputdata[j++].c_str()),  
-               inputdata[j++].c_str());
-      }
-      j++;
-      while ( atof(inputdata[j].c_str())>=0 )
-      {
-         Event->AddOneSAMCMaterial( Event->Win_After_Mag,
-                atof(inputdata[j++].c_str()),
-                atof(inputdata[j++].c_str()),
-                atof(inputdata[j++].c_str()),
-                atof(inputdata[j++].c_str()),
-                atoi(inputdata[j++].c_str()),
-                inputdata[j++].c_str());
-      }
+      //while ( atof(inputdata[j].c_str())>=0 ) {
+      //   Event->AddOneSAMCMaterial(
+      //         Event->Win_Before_Mag,
+      //         atof(inputdata[j++].c_str()), 
+      //         atof(inputdata[j++].c_str()), 
+      //         atof(inputdata[j++].c_str()), 
+      //         atof(inputdata[j++].c_str()), 
+      //         atoi(inputdata[j++].c_str()),  
+      //         inputdata[j++].c_str());
+      //}
+      //j++;
+      //while ( atof(inputdata[j].c_str())>=0 )
+      //{
+      //   Event->AddOneSAMCMaterial( Event->Win_After_Mag,
+      //          atof(inputdata[j++].c_str()),
+      //          atof(inputdata[j++].c_str()),
+      //          atof(inputdata[j++].c_str()),
+      //          atof(inputdata[j++].c_str()),
+      //          atoi(inputdata[j++].c_str()),
+      //          inputdata[j++].c_str());
+      //}
+
+      Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat2 );
+      Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat3 );
+      Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat4 );
+
+      Event->AddOneSAMCMaterial( Event->Win_After_Mag, man->fMat5 );
+      Event->AddOneSAMCMaterial( Event->Win_After_Mag, man->fMat6 );
 
       if ( !man->fUserOutputGenFileName.empty() ) {
          int buf_i=0;
@@ -731,7 +742,8 @@ int main(int argc, char** argv) {
    delete T;
    f->Close();
    delete f;
-   inputdata.clear();
+
+   //inputdata.clear();
    printf("Results saved at %s\n",samc_rootfilename.c_str());
    printf("Time at the end of job = %f seconds\n",timer.CpuTime());
 

@@ -1,10 +1,10 @@
 #---------------------------------------------------------------------------
 set(General_files 
-   SAMC
    SAMCMaterial
    SAMCEvent
    SAMCConstants
    SAMCManager
+   SAMCEventGenerator
    SAMCPropagator
    #withxycollimator
    )

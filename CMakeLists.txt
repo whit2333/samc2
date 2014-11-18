@@ -184,13 +184,13 @@ set_target_properties(SAMC PROPERTIES ${SAMC_LIBRARY_PROPERTIES})
 
 # ------------------------------------------------------------------------------
 # Build the binary and ins 
-add_executable(samc2 src/SAMC.C)
+#add_executable(samc2 src/SAMC.C)
+#add_dependencies(samc2 SAMC)
+#target_link_libraries(samc2 ${YAMLCPP_LIBRARIES} ${ROOT_LIBRARIES} SAMC)
+
+add_executable(samc2 src/main.C)
 add_dependencies(samc2 SAMC)
 target_link_libraries(samc2 ${YAMLCPP_LIBRARIES} ${ROOT_LIBRARIES} SAMC)
-
-add_executable(samc3 src/main.C)
-add_dependencies(samc3 SAMC)
-target_link_libraries(samc3 ${YAMLCPP_LIBRARIES} ${ROOT_LIBRARIES} SAMC)
 
 # ------------------------------------------------------------------------------
 # Install the shared libraries 
@@ -213,7 +213,6 @@ install(TARGETS SAMC DESTINATION lib)
 install(FILES ${files} DESTINATION include/SAMC)
 install(TARGETS samc2 DESTINATION bin)
 install(TARGETS samc-config DESTINATION bin)
-install(TARGETS samc3 DESTINATION bin)
 
 
 # ------------------------------------------------------------------------------

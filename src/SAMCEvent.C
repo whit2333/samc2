@@ -43,26 +43,32 @@ int SAMCEvent::Process() {
    return 0;
 }
 //______________________________________________________________________________
+void SAMCEvent::AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin,const SAMCMaterial& mat) {
+   // A temporary work around function to get things to compile.
+   // Ideally this would not be int the event class!!!!
+   AddOneSAMCMaterial(aWin, mat.fX0, mat.fDensity, mat.fL, mat.fA, mat.fZ, std::string(mat.GetName()) );
+}
+//______________________________________________________________________________
 void SAMCEvent::AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin,const double& aX0,const double& arho,const double& aL,const double& aA,const int& aZ, std::string aName) {
 
    //To make sure read correctly, so I reverse the order compared with input file.
    SAMCMaterial a;
-   a.Name = aName;
-   a.Z    = aZ;
-   a.A    = aA;
-   a.L    = aL;
-   a.rho  = arho;
-   a.T    = aL*arho;
-   a.X0   = aX0;
+   a.SetName( aName.c_str() );
+   a.fZ    = aZ;
+   a.fA    = aA;
+   a.fL    = aL;
+   a.fDensity  = arho;
+   a.fT    = aL*arho;
+   a.fX0   = aX0;
    if ( fabs(aX0)<1e-10 )
    {
-      a.TR=0;
-      a.bt=0;
+      a.fTR=0;
+      a.fbt=0;
    }
    else
    {
-      a.TR=a.T/aX0;
-      a.bt=b(aZ)*aL*arho/aX0;
+      a.fTR = a.fT/aX0;
+      a.fbt = b(aZ)*aL*arho/aX0;
    }
    aWin.push_back(a);
 }
@@ -183,17 +189,17 @@ void SAMCEvent::Generator() {
    imax=Win_Before_Mag.size();
 
    for ( i=0; i<imax; i++ ) {
-      lHL += Win_Before_Mag[i].L;
+      lHL += Win_Before_Mag[i].fL;
    }
 
    double lphrad = theta_rad-T_theta*DegToRad();//scattering angle in y axis in TCS or x axis in TRCS
    //it doesn't I add atan(ph_tg_gen) since it's so small for target and windows
 
    //Win_Before_Mag add Win_f
-   if ( Win_f.Z!=0 && Win_f.A!=0 && Win_f.rho!=0 && Win_f.TR!=0 )
+   if( (Win_f.fZ != 0) && (Win_f.fA!= 0) && (Win_f.fDensity != 0) && (Win_f.fTR != 0) )
    {
       m0=Win_f;//Win_f added to Win_Before_Mag
-      m0.Name="Win_f";
+      m0.SetName("Win_f");
       Win_Before_Mag.insert(it,m0);
       FirstInWinBeforeMagBlock++;
    }
@@ -219,7 +225,7 @@ void SAMCEvent::Generator() {
       lL=fabs((target_edgepoint_TRCS(0)-lp_TRCS(0))/sin(lphrad));
    }
 
-   m0.L=lL;
+   m0.fL=lL;
    Win_Before_Mag.insert(it,m0);
    FirstInWinBeforeMagBlock++;
 
@@ -229,39 +235,41 @@ void SAMCEvent::Generator() {
    {
       //http://pdg.lbl.gov/2009/AtomicNuclearProperties/HTML_PAGES/104.html
       double total=0.000124+0.755267+0.231781+0.012827;//total mass of component of air
-      m0.Name="Air";
-      m0.Z=int(6*0.000124/total+7*0.755267/total+8*0.231781/total+18*0.012827/total);
-      m0.A=m0.Z/0.499;
-      m0.L=man->HRS_L-lHL;
+      m0.SetName("Air");
+      m0.fZ = int(6*0.000124/total+7*0.755267/total+8*0.231781/total+18*0.012827/total);
+      m0.fA = m0.fZ/0.499;
+      m0.fL = man->HRS_L-lHL;
 
-      m0.rho=1.205e-03;
-      m0.T=m0.L*m0.rho;
-      m0.X0=36.66;
-      m0.bt=b(m0.Z)*m0.T/m0.X0;
-      it=Win_Before_Mag.end();
+      m0.fDensity = 1.205e-03;
+      m0.fT        = m0.fL*m0.fDensity;
+      m0.fX0       = 36.66;
+      m0.fbt       = b(m0.fZ)*m0.fT/m0.fX0;
+      it          = Win_Before_Mag.end();
       it--;
       Win_Before_Mag.insert(it,m0);
    }
    else if ( (lHL)>man->HRS_L )
    {
-      printf("[Error %s: Line %d] Total windows length=%f>HRS_L=%f.\n",__FILE__,__LINE__,(lHL+Win_Before_Mag[imax-1].L),man->HRS_L);
+      printf("[Error %s: Line %d] Total windows length=%f>HRS_L=%f.\n",__FILE__,__LINE__,(lHL+Win_Before_Mag[imax-1].fL),man->HRS_L);
       exit(-3);
    }
    //Correct First SAMCMaterial.L in Win_Before_Mag Block of inputfile
    it=Win_Before_Mag.begin();
-   (it+FirstInWinBeforeMagBlock)->L+=reactz_TCS;
+   (it+FirstInWinBeforeMagBlock)->fL+=reactz_TCS;
    for ( i=0; i<FirstInWinBeforeMagBlock; i++ )
-      (it+FirstInWinBeforeMagBlock)->L-=(it+i)->L;
+      (it+FirstInWinBeforeMagBlock)->fL-=(it+i)->fL;
 
    for ( i = 0; i < Win_Before_Mag.size(); ++i ) {
-      Win_Before_Mag[i].T=Win_Before_Mag[i].L*Win_Before_Mag[i].rho;
-      if ( fabs(Win_Before_Mag[i].X0)<1e-10 ) {
-         Win_Before_Mag[i].TR=0;
+
+      Win_Before_Mag[i].fT = Win_Before_Mag[i].fL*Win_Before_Mag[i].fDensity;
+
+      if ( fabs(Win_Before_Mag[i].fX0)<1e-10 ) {
+         Win_Before_Mag[i].fTR=0;
       }
       else {
-         Win_Before_Mag[i].TR=Win_Before_Mag[i].T/Win_Before_Mag[i].X0;
+         Win_Before_Mag[i].fTR = Win_Before_Mag[i].fT/Win_Before_Mag[i].fX0;
       }
-      Win_Before_Mag[i].bt=b(Win_Before_Mag[i].Z)*Win_Before_Mag[i].TR;
+      Win_Before_Mag[i].fbt = b(Win_Before_Mag[i].fZ)*Win_Before_Mag[i].fTR;
    }
    /*}}}*/
 
@@ -274,7 +282,7 @@ void SAMCEvent::Generator() {
    {
       case 1: //elastic
          E_p=gRandom->Gaus(0,man->P0*3e-4);
-         E_p+=E_s/(1+2*E_s*sinsq/Target.M);
+         E_p+=E_s/(1+2*E_s*sinsq/Target.fM);
          break;
       case 2: //quasi-elastic
       case 0: //phase default
@@ -311,7 +319,7 @@ int SAMCEvent::RefineTg()
    SAMCMaterial mixture;
 
    double offset = p_TCS(2)-p_TCS_ref(2);//L=along Z in TCS
-   mixture.L     = offset;
+   mixture.fL     = offset;
 
    //Printf("p_TCS(%g,%g,%g),(th=%g,ph=%g)",p_TCS(0),p_TCS(1),p_TCS(2),th_tg_gen,ph_tg_gen);
    //FIXME: I want to add energy loss in GetRef_Plane
@@ -339,14 +347,14 @@ int SAMCEvent::RefineTg()
       imax=Win_Before_Mag.size();
       for ( i=0; i<imax; i++ )
       {
-         E_p-=Ion_Loss(E_p,Win_Before_Mag[i]);
-         E_p-=Bremss_Loss(E_p,Win_Before_Mag[i].bt);
+         E_p -= Ion_Loss(E_p,Win_Before_Mag[i]);
+         E_p -= Bremss_Loss(E_p,Win_Before_Mag[i].fbt);
       }
       imax=Win_After_Mag.size();
       for ( i=0; i<imax; i++ )
       {
          E_p-=Ion_Loss(E_p,Win_After_Mag[i]);
-         E_p-=Bremss_Loss(E_p,Win_After_Mag[i].bt);
+         E_p-=Bremss_Loss(E_p,Win_After_Mag[i].fbt);
       }
       if ( E_p<0 ) {
          printf("[Warning %s: Line %d] E_p after Energy Loss=%f<0.\n",__FILE__,__LINE__,E_p);
@@ -563,12 +571,12 @@ int SAMCEvent::ToFp(const double& ax,const double& ay,const double& ath,const do
       p_FP.SetXYZT(x_fp,y_fp,0,p_TCS_ref(3));
       p_P_FP.SetXYZT(th_fp,ph_fp,1,p_TCS_ref(3));
       SAMCMaterial Vacuum;
-      Vacuum.L=0;
+      Vacuum.fL=0;
       for ( i = 0; i < Win_After_Mag.size(); ++i ) {
-         Vacuum.L-=Win_After_Mag[i].L;
+         Vacuum.fL-=Win_After_Mag[i].fL;
       }
-      Vacuum.Name="Vacuum";
-      Vacuum.TR=0;
+      Vacuum.SetName("Vacuum");
+      Vacuum.fTR=0;
       Transport(p_FP,p_P_FP,Vacuum,man->IsMultiScat);//Just change th_fp,ph_fp
       for ( i = 0; i < Win_After_Mag.size(); ++i ) {
          Transport(p_FP,p_P_FP,Win_After_Mag[i],man->IsMultiScat);//Just change th_fp,ph_fp
@@ -727,15 +735,15 @@ double SAMCEvent::Ion_Loss(const double& aE0,const SAMCMaterial& aSAMCMaterial)
    //aT: g/cm^2, arho: g/cm^3
    //Particle Booklet Equ(27.9)
    //printf("Z=%d,A=%f,T=%f,rho=%f\n",aSAMCMaterial.Z,aSAMCMaterial.A,aSAMCMaterial.T,aSAMCMaterial.rho);
-   double lK=0.307075;// cm^2/g for A=1 g/mol
-   double lbetasq=1-ELECTRON_MASS*ELECTRON_MASS/(aE0*aE0);
-   double lxi=lK/2*aSAMCMaterial.Z/aSAMCMaterial.A*aSAMCMaterial.T/lbetasq;//aT: g/cm^2
-   double lhbarwsq=28.816*28.816*aSAMCMaterial.rho*aSAMCMaterial.Z/aSAMCMaterial.A*1e-12;//MeV arho is density of absorber
-   double j=0.200;
-   double Delta_p=lxi*(log(2*ELECTRON_MASS*lxi/lhbarwsq)+j);
-   double lw=4*lxi;
-   double result=0;
-   if ( aSAMCMaterial.Z!=0 && aSAMCMaterial.A!=0 && aSAMCMaterial.T!=0 && aSAMCMaterial.rho!=0 )
+   double lK       = 0.307075;// cm^2/g for A                                                                                = 1 g/mol
+   double lbetasq  = 1-ELECTRON_MASS*ELECTRON_MASS/(aE0*aE0);
+   double lxi      = lK/2*aSAMCMaterial.fZ/aSAMCMaterial.fA*aSAMCMaterial.fT/lbetasq;//aT: g/cm^2
+   double lhbarwsq = 28.816*28.816*aSAMCMaterial.fDensity*aSAMCMaterial.fZ/aSAMCMaterial.fA*1e-12;//MeV arho is density of absorber
+   double j        = 0.200;
+   double Delta_p  = lxi*(log(2*ELECTRON_MASS*lxi/lhbarwsq)+j);
+   double lw       = 4*lxi;
+   double result   = 0;
+   if ( aSAMCMaterial.fZ!=0 && aSAMCMaterial.fA!=0 && aSAMCMaterial.fT!=0 && aSAMCMaterial.fDensity !=0 )
       result=gRandom->Landau(Delta_p,lw);
    if ( result>(aE0-ELECTRON_MASS) )
       result=aE0-ELECTRON_MASS;
@@ -823,23 +831,23 @@ void SAMCEvent::Transport(TLorentzVector& aPos,TLorentzVector& aMom,const SAMCMa
    //aPos: position aMom: momentum
    double lE=aMom(3);
    double ms_phi,ms_theta;
-   if ( aIsMultiScatt && fabs(aSAMCMaterial.TR)>1e-15 )
+   if ( aIsMultiScatt && fabs(aSAMCMaterial.fTR)>1e-15 )
    {
-      ms_phi=MultiScattering(lE,aSAMCMaterial.TR);//rad
-      ms_theta=MultiScattering(lE,aSAMCMaterial.TR);//rad
+      ms_phi=MultiScattering(lE,aSAMCMaterial.fTR);//rad
+      ms_theta=MultiScattering(lE,aSAMCMaterial.fTR);//rad
    }
    else {
       ms_phi=0;
       ms_theta=0;
    }
    //ms_theta=2*PI*gRandom->Rndm();
-   double lth=aMom.X()/aMom.Z();
-   double lph=aMom.Y()/aMom.Z();
+   double lth = aMom.X()/aMom.Z();
+   double lph = aMom.Y()/aMom.Z();
 
    //pass L/2
-   aPos.SetX(aPos.X()+aSAMCMaterial.L/2*lth);
-   aPos.SetY(aPos.Y()+aSAMCMaterial.L/2*lph);
-   aPos.SetZ(aPos.Z()+aSAMCMaterial.L/2);
+   aPos.SetX(aPos.X()+aSAMCMaterial.fL/2*lth);
+   aPos.SetY(aPos.Y()+aSAMCMaterial.fL/2*lph);
+   aPos.SetZ(aPos.Z()+aSAMCMaterial.fL/2);
 
    //change the angle and pass the rest L/2
    lth=(tan(ms_theta)+lth)/(1-tan(ms_theta)*lth);
@@ -847,17 +855,17 @@ void SAMCEvent::Transport(TLorentzVector& aPos,TLorentzVector& aMom,const SAMCMa
    aMom.SetX(lth);
    aMom.SetY(lph);
    aMom.SetZ(1);
-   aPos.SetX(aPos.X()+aSAMCMaterial.L/2*lth);
-   aPos.SetY(aPos.Y()+aSAMCMaterial.L/2*lph);
-   aPos.SetZ(aPos.Z()+aSAMCMaterial.L/2);
+   aPos.SetX(aPos.X()+aSAMCMaterial.fL/2*lth);
+   aPos.SetY(aPos.Y()+aSAMCMaterial.fL/2*lph);
+   aPos.SetZ(aPos.Z()+aSAMCMaterial.fL/2);
 }
 //______________________________________________________________________________
 double SAMCEvent::MultiScattering(const double& aE,const double& aTR)
 {
    //only for electron
-   double lPsq=aE*aE-ELECTRON_MASS*ELECTRON_MASS;
-   double bcp=lPsq/aE;
-   double ltheta0=13.6/bcp*sqrt(aTR)*(1+0.038*log(aTR));
+   double lPsq    = aE*aE-ELECTRON_MASS*ELECTRON_MASS;
+   double bcp     = lPsq/aE;
+   double ltheta0 = 13.6/bcp*sqrt(aTR)*(1+0.038*log(aTR));
    if ( aTR!=0 )
    {
       //return gRandom->Gaus(0,ltheta0/2.3548);//rad sigma=width/(2*sqrt(2)
@@ -873,16 +881,16 @@ double SAMCEvent::MultiScattering(const double& aE,const double& aTR)
 //______________________________________________________________________________
 void SAMCEvent::SetSAMCMaterial(SAMCMaterial& aSAMCMaterial)
 {
-   aSAMCMaterial.M=aSAMCMaterial.A*AMU;//MeV
-   if ( aSAMCMaterial.L==0 && aSAMCMaterial.rho!=0 ) {
-      aSAMCMaterial.L=aSAMCMaterial.T/aSAMCMaterial.rho;
+   aSAMCMaterial.fM=aSAMCMaterial.fA*AMU;//MeV
+   if ( aSAMCMaterial.fL==0 && aSAMCMaterial.fDensity!=0 ) {
+      aSAMCMaterial.fL=aSAMCMaterial.fT/aSAMCMaterial.fDensity;
    }
-   aSAMCMaterial.X0=Rad_Len(aSAMCMaterial.Z,aSAMCMaterial.A);
-   if ( aSAMCMaterial.X0!=0 )
-      aSAMCMaterial.TR=aSAMCMaterial.T/aSAMCMaterial.X0;
+   aSAMCMaterial.fX0=Rad_Len(aSAMCMaterial.fZ,aSAMCMaterial.fA);
+   if ( aSAMCMaterial.fX0!=0 )
+      aSAMCMaterial.fTR=aSAMCMaterial.fT/aSAMCMaterial.fX0;
    else
-      aSAMCMaterial.TR=0;
-   aSAMCMaterial.bt=b(aSAMCMaterial.Z)*aSAMCMaterial.TR;
+      aSAMCMaterial.fTR=0;
+   aSAMCMaterial.fbt=b(aSAMCMaterial.fZ)*aSAMCMaterial.fTR;
 }
 //______________________________________________________________________________
 SAMCMaterial SAMCEvent::GetMixture(const std::vector<SAMCMaterial>& aWin)
@@ -890,19 +898,19 @@ SAMCMaterial SAMCEvent::GetMixture(const std::vector<SAMCMaterial>& aWin)
    size_t i;
    size_t imax=aWin.size();
    SAMCMaterial mixture;
-   mixture.Name="mixture";
-   mixture.L=0;
-   mixture.A=0;
+   mixture.SetName("mixture");
+   mixture.fL=0;
+   mixture.fA=0;
    //get mixture TR
    for ( i=0; i<imax; i++ )
    {
-      mixture.L+=aWin[i].L;
-      mixture.A+=aWin[i].A;
+      mixture.fL+=aWin[i].fL;
+      mixture.fA+=aWin[i].fA;
    }
-   mixture.TR=0;
+   mixture.fTR=0;
    for ( i=0; i<imax; i++ )
    {
-      mixture.TR+=aWin[i].A/mixture.A*aWin[i].TR;
+      mixture.fTR+=aWin[i].fA/mixture.fA*aWin[i].fTR;
    }
    return mixture;
 }
@@ -918,22 +926,22 @@ void SAMCEvent::GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const s
 
    AllWins.clear();
    AllWins=aWinBefore;
-   Vacuum.Name="Vacuum";
-   Vacuum.L=aL;
-   Vacuum.A=0;
-   Vacuum.TR=0;
+   Vacuum.SetName("Vacuum");
+   Vacuum.fL=aL;
+   Vacuum.fA=0;
+   Vacuum.fTR=0;
    AllWins.push_back(Vacuum);
    size_t i;
    for ( i=0; i<aWinAfter.size(); i++ )
       AllWins.push_back(aWinAfter[i]);
-   Vacuum.L=0;
+   Vacuum.fL=0;
    //Printf("Pos(%g,%g,%g),(th=%g,ph=%g)",aoPos(0),aoPos(1),aoPos(2),aoMom(0)/aoMom(2),aoMom(1)/aoMom(2));
    for ( i = 0; i < AllWins.size(); ++i ) {
       Transport(aoPos,aoMom,AllWins[i],man->IsMultiScat);//move to mag
       //Printf("Pos(%g,%g,%g),(th=%g,ph=%g)",aoPos(0),aoPos(1),aoPos(2),aoMom(0)/aoMom(2),aoMom(1)/aoMom(2));
-      Vacuum.L-=AllWins[i].L;
+      Vacuum.fL-=AllWins[i].fL;
    }
-   Vacuum.L+=aOffset;
+   Vacuum.fL+=aOffset;
    Transport(aoPos,aoMom,Vacuum,man->IsMultiScat);//back to ztg=0 in TCS
    //Printf("Pos(%g,%g,%g),(th=%g,ph=%g)",aoPos(0),aoPos(1),aoPos(2),aoMom(0)/aoMom(2),aoMom(1)/aoMom(2));
 }
@@ -1007,8 +1015,8 @@ double SAMCEvent::PROD_AND(const double& ax,const double& ay)
    return prod;
 }
 //______________________________________________________________________________
-void SAMCEvent::Print()
-{
+void SAMCEvent::Print() {
+
    printf("--------------------\n");
    //refer to http://www.fileformat.info/info/unicode/char/search.htm for \x
    printf("%*s=(%*.2f,%*.2f,%*.4f,%*.2f) (4-momentum position of target edgepoint [HCS])\n",20,"target_edgepoint_TRCS(x,y,z,E_s)",10,target_edgepoint_TRCS(0),10,target_edgepoint_TRCS(1),10,target_edgepoint_TRCS(2),10,target_edgepoint_TRCS(3));
@@ -1029,7 +1037,7 @@ void SAMCEvent::Print()
    printf("%-*s=%*.2f %-*s %-*s\n",15,"theta_rad", 10,theta_rad, 8,"",              40,"(\xce\xb8 scattering angle rad)");
    printf("%-*s=%*.2f %-*s %-*s\n",15,"T_theta",   10,T_theta,   9,"\xc2\xb0",      40,"(\xce\xb8t target angle)");
    printf("%-*s=%*.2f %-*s %-*s\n",15,"sinsq",     10,sinsq,     8,"",              40,"(sin\xc2\xb2(\xce\xb8/2))");
-   printf("%-*s=%*.2f %-*s %-*s\n",15,"M_T",       10,Target.M,  8,"MeV",           40,"(Mass of target)");
+   printf("%-*s=%*.2f %-*s %-*s\n",15,"M_T",       10,Target.fM,  8,"MeV",           40,"(Mass of target)");
    printf("%-*s=%*.2f %-*s %-*s\n",15,"beam_x",    10,beam_x,    8,"cm",            40,"(Beam X)");
    printf("%-*s=%*.2f %-*s %-*s\n",15,"beam_y",    10,beam_y,    8,"cm",            40,"(Beam Y)");
    printf("%-*s=%*.2f %-*s %-*s\n",15,"reactz_gen",    10,reactz_gen,    8,"cm",            40,"(Z react)");
@@ -1077,14 +1085,14 @@ void SAMCEvent::Print()
 //______________________________________________________________________________
 void SAMCEvent::PrintMaterial(const SAMCMaterial& aSAMCMaterial)
 {
-   printf("%-*s=%*d %-*s %-*s\n",15,Form("%s_Z",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.Z,       8,"",  40,"(Atomic Number)");
-   printf("%-*s=%*.2f %-*s %-*s\n",15,Form("%s_A",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.A,       8,"g/mol",  40,"(Atomic Weight)");
-   printf("%-*s=%*.2e %-*s %-*s\n",15,Form("%s_L",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.L,       8,"cm",  40,"(length)");
-   printf("%-*s=%*.2e %-*s %-*s\n",15,Form("%s_T",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.T,       9,"g/cm\xc2\xb2",  40,"(thickness)");
-   printf("%-*s=%*.2e %-*s %-*s\n",15,Form("%s_TR",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.TR,       8,"rad_len",  40,"(thickness in rad_len)");
-   printf("%-*s  =%*.2e %-*s %-*s\n",16,Form("%s_\xf0\x9d\x9c\x8c",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.rho,       9,"g/cm\xc2\xb3",  40,"(density)");
-   printf("%-*s=%*.2e %-*s %-*s\n",15,Form("%s_X0",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.X0,       9,"g/cm\xc2\xb2",  40,"(Radiation Length)");
-   printf("%-*s=%*.2e %-*s %-*s\n",15,Form("%s_bt",aSAMCMaterial.Name.c_str()),     10,aSAMCMaterial.bt,       8,"",  40,"(bt)");
+   printf("%-*s=%*d %-*s %-*s\n"     , 15 , Form("%s_Z"                , aSAMCMaterial.GetName())    , 10 , aSAMCMaterial.fZ  , 8 , ""             , 40 , "(Atomic Number)");
+   printf("%-*s=%*.2f %-*s %-*s\n"   , 15 , Form("%s_A"                , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fA  , 8 , "g/mol"        , 40 , "(Atomic Weight)");
+   printf("%-*s=%*.2e %-*s %-*s\n"   , 15 , Form("%s_L"                , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fL   , 8 , "cm"           , 40 , "(length)");
+   printf("%-*s=%*.2e %-*s %-*s\n"   , 15 , Form("%s_T"                , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fT   , 9 , "g/cm\xc2\xb2" , 40 , "(thickness)");
+   printf("%-*s=%*.2e %-*s %-*s\n"   , 15 , Form("%s_TR"               , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fTR  , 8 , "rad_len"      , 40 , "(thickness in rad_len)");
+   printf("%-*s  =%*.2e %-*s %-*s\n" , 16 , Form("%s_\xf0\x9d\x9c\x8c" , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fDensity , 9 , "g/cm\xc2\xb3" , 40 , "(density)");
+   printf("%-*s=%*.2e %-*s %-*s\n"   , 15 , Form("%s_X0"               , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fX0  , 9 , "g/cm\xc2\xb2" , 40 , "(Radiation Length)");
+   printf("%-*s=%*.2e %-*s %-*s\n"   , 15 , Form("%s_bt"               , aSAMCMaterial.GetName()) , 10 , aSAMCMaterial.fbt  , 8 , ""             , 40 , "(bt)");
 }
 //______________________________________________________________________________
 

@@ -76,7 +76,7 @@ SAMCManager::~SAMCManager(){
 Int_t SAMCManager::LoadConfig(const char * filename){
 
    // yaml-cpp library format
-   YAML::Node aNode = YAML::LoadFile("filename");
+   YAML::Node aNode = YAML::LoadFile(filename);
 
    fNumberOfEvents    = aNode["Nevents"].as<int>();
    fOutputFileName    = aNode["output_file"].as<std::string>();
@@ -88,7 +88,7 @@ Int_t SAMCManager::LoadConfig(const char * filename){
    HRS_L              = aNode["HRS_parameters"]["HRS_length"].as<double>();
    Q1_Exit_Eff_L      = aNode["HRS_parameters"]["Q1_length"].as<double>();
    D_Entrance_Eff_L   = aNode["HRS_parameters"]["D_entrance_length"].as<double>();
-   D_Exit_Eff_L       = aNode["HRS_parameters"]["D_exit_legnth"].as<double>();
+   D_Exit_Eff_L       = aNode["HRS_parameters"]["D_exit_length"].as<double>();
    Q3_Entrance_Eff_L  = aNode["HRS_parameters"]["Q3_entrance_length"].as<double>();
    Q3_Exit_Eff_L      = aNode["HRS_parameters"]["Q3_exit_length"].as<double>();
    FP_Eff_L           = aNode["HRS_parameters"]["FP_length"].as<double>();
@@ -117,32 +117,75 @@ Int_t SAMCManager::LoadConfig(const char * filename){
    z0                 = aNode["monte_carlo_parameters"]["target_center_z0"].as<double>();
    T_L                = aNode["monte_carlo_parameters"]["target_length"].as<double>();
    T_H                = aNode["monte_carlo_parameters"]["target_height"].as<double>();
-   RfunDB_FileName    = aNode["monte_caralo_parameters"]["run_db_filename"].as<std::string>();
+   RfunDB_FileName    = aNode["monte_carlo_parameters"]["run_db_filename"].as<std::string>();
 
    E0                 = aNode["HRS_settings"]["Es"].as<double>();
    P0                 = aNode["HRS_settings"]["P0"].as<double>();
 
-   fTargetMaterial.Name = aNode["target"]["target_name"].as<string>();
-   fTargetMaterial.Z    = aNode["target"]["target_Z"].as<double>();
-   fTargetMaterial.A    = aNode["target"]["target_A"].as<double>();
-   fTargetMaterial.T    = aNode["target"]["target_thickness"].as<double>();
-   fTargetMaterial.rho  = aNode["target"]["target_density"].as<double>();
-   fTargetMaterial.L    = T_L;//in HCS
+   // Target material
+   fTargetMaterial.SetName(   aNode["target"]["target_name"].as<std::string>().c_str());
+   fTargetMaterial.fZ       = aNode["target"]["target_Z"].as<double>();
+   fTargetMaterial.fA       = aNode["target"]["target_A"].as<double>();
+   fTargetMaterial.fT       = aNode["target"]["target_thickness"].as<double>();
+   fTargetMaterial.fDensity = aNode["target"]["target_density"].as<double>();
+   fTargetMaterial.fL       = T_L;//in HCS
 
-   fMat0.Name = aNode["target"]["target_window_initial_name"].as<string>();
-   fMat0.Z    = aNode["target"]["target_window_initial_Z"].as<double>();
-   fMat0.A    = aNode["target"]["target_window_initial_A"].as<double>();
-   fMat0.T    = aNode["target"]["target_window_initial_thickness"].as<double>();
-   fMat0.rho  = aNode["target"]["target_window_initial_density"].as<double>();
-   //fMat0.L    = T_L;//in HCS
-   fMat1.Name = aNode["target"]["target_window_final_name"].as<string>();
-   fMat1.Z    = aNode["target"]["target_window_final_Z"].as<double>();
-   fMat1.A    = aNode["target"]["target_window_final_A"].as<double>();
-   fMat1.T    = aNode["target"]["target_window_final_thickness"].as<double>();
-   fMat1.rho  = aNode["target"]["target_window_final_density"].as<double>();
+   // First Target Window
+   fMat0.SetName(   aNode["target"]["target_window_initial_name"].as<std::string>().c_str() );
+   fMat0.fZ       = aNode["target"]["target_window_initial_Z"].as<double>();
+   fMat0.fA       = aNode["target"]["target_window_initial_A"].as<double>();
+   fMat0.fT       = aNode["target"]["target_window_initial_thickness"].as<double>();
+   fMat0.fDensity = aNode["target"]["target_window_initial_density"].as<double>();
+
+   // Outgoing target window
+   fMat1.SetName(   aNode["target"]["target_window_final_name"].as<std::string>().c_str() );
+   fMat1.fZ       = aNode["target"]["target_window_final_Z"].as<double>();
+   fMat1.fA       = aNode["target"]["target_window_final_A"].as<double>();
+   fMat1.fT       = aNode["target"]["target_window_final_thickness"].as<double>();
+   fMat1.fDensity = aNode["target"]["target_window_final_density"].as<double>();
    //fMat1.L    = T_L;//in HCS
 
    fTheta_Target  = aNode["target"]["target_rotation"].as<double>();
+
+   // Target Chamber vacuum
+   fMat2.SetName(   aNode["windows"]["target_vacuum_name"].as<std::string>().c_str() );
+   fMat2.fZ       = aNode["windows"]["target_vacuum_Z"].as<double>();
+   fMat2.fA       = aNode["windows"]["target_vacuum_A"].as<double>();
+   fMat2.fL       = aNode["windows"]["target_vacuum_length"].as<double>();
+   fMat2.fDensity = aNode["windows"]["target_vacuum_density"].as<double>();
+   fMat2.fX0      = aNode["windows"]["target_vacuum_RL"].as<double>();
+
+   // Target Chamber Window
+   fMat3.SetName(   aNode["windows"]["target_chamber_name"].as<std::string>().c_str() );
+   fMat3.fZ       = aNode["windows"]["target_chamber_Z"].as<double>();
+   fMat3.fA       = aNode["windows"]["target_chamber_A"].as<double>();
+   fMat3.fL       = aNode["windows"]["target_chamber_length"].as<double>();
+   fMat3.fDensity = aNode["windows"]["target_chamber_density"].as<double>();
+   fMat3.fX0      = aNode["windows"]["target_chamber_RL"].as<double>();
+
+   // 
+   fMat4.SetName(   aNode["windows"]["HRS_front_name"].as<std::string>().c_str() );
+   fMat4.fZ       = aNode["windows"]["HRS_front_Z"].as<double>();
+   fMat4.fA       = aNode["windows"]["HRS_front_A"].as<double>();
+   fMat4.fL       = aNode["windows"]["HRS_front_length"].as<double>();
+   fMat4.fDensity = aNode["windows"]["HRS_front_density"].as<double>();
+   fMat4.fX0      = aNode["windows"]["HRS_front_RL"].as<double>();
+
+   // 
+   fMat5.SetName(   aNode["windows"]["HRS_back_name"].as<std::string>().c_str() );
+   fMat5.fZ       = aNode["windows"]["HRS_back_Z"].as<double>();
+   fMat5.fA       = aNode["windows"]["HRS_back_A"].as<double>();
+   fMat5.fL       = aNode["windows"]["HRS_back_length"].as<double>();
+   fMat5.fDensity = aNode["windows"]["HRS_back_density"].as<double>();
+   fMat5.fX0      = aNode["windows"]["HRS_back_RL"].as<double>();
+
+   // 
+   fMat6.SetName(   aNode["windows"]["before_FP_name"].as<std::string>().c_str() );
+   fMat6.fZ       = aNode["windows"]["before_FP_Z"].as<double>();
+   fMat6.fA       = aNode["windows"]["before_FP_A"].as<double>();
+   fMat6.fL       = aNode["windows"]["before_FP_length"].as<double>();
+   fMat6.fDensity = aNode["windows"]["before_FP_density"].as<double>();
+   fMat6.fX0      = aNode["windows"]["before_FP_RL"].as<double>();
 
    return 0;
 }
