@@ -90,7 +90,7 @@ int main(int argc, char * argv[]) {
 }
 
 void print_version(){
-   std::cout << "SAMC Version " << SAMC_VERSION_MAJOR << "." << SAMC_VERSION_MINOR << " ";
+   std::cout << "SAMC Version " << SAMC_MAJOR_VERSION << "." << SAMC_MINOR_VERSION << " ";
 }
 
 void print_usage(){

@@ -5,15 +5,18 @@ cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
 project(SAMC CXX Fortran)
 
 # The version number.
-set (SAMC_VERSION_MAJOR 1)
-set (SAMC_VERSION_MINOR 0)
+set (SAMC_MAJOR_VERSION 0)
+set (SAMC_MINOR_VERSION 1)
+set (SAMC_PATCH_VERSION 0)
 
 set (SAMC_CXX_CFLAGS)
 set (SAMC_CXX_LDFLAGS)
 set (SAMC_CXX_LIBS)
 set (SAMC_CXX_INC_DIR)
 set (SAMC_FC_CFLAGS)
+
 set (SAMC_GRID_DATA_DIR)
+set (SAMC_DATA_DIR "${PROJECT_SOURCE_DIR}/main")
 
 #-------------------------------------------------------
 set(CMAKE_MODULE_PATH
@@ -22,9 +25,9 @@ set(CMAKE_MODULE_PATH
    ${CMAKE_MODULE_PATH}
    )
 
-# Grid dir
-set (SAMC_DATA_DIR "${PROJECT_SOURCE_DIR}/data")
 
+#-------------------------------------------------------
+# checkout out of source directory build
 macro(SAMC_CHECK_OUT_OF_SOURCE_BUILD)
    get_filename_component(bindir_parent ${CMAKE_BINARY_DIR} PATH)
    if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
@@ -35,16 +38,18 @@ macro(SAMC_CHECK_OUT_OF_SOURCE_BUILD)
       message(FATAL_ERROR "SAMC cannot be built from a sub-directory of the source tree that is a symlink. This is a current limitation of CMake. Please create a real build directory and run the command 'cmake <path_to_source_dir>' in this newly created directory.")
    endif()
 endmacro()
-
 #Doesn't work with older cmake versions:
 #SAMC_CHECK_OUT_OF_SOURCE_BUILD()
 
+#-------------------------------------------------------
 # Check the compiler and set the compile and link flags
 #set(CMAKE_BUILD_TYPE Debug)
 
+#-------------------------------------------------------
 set(LIBRARY_OUTPUT_PATH "${CMAKE_BINARY_DIR}/lib")
 set(EXECUTABLE_OUTPUT_PATH "${CMAKE_BINARY_DIR}/bin")
 
+#-------------------------------------------------------
 # not sure this is the best way to do this....
 set(SAMC_FC_CFLAGS "${SAMC_FC_CFLAGS} ${CMAKE_Fortran_FLAGS}")
 #set(CMAKE_Fortran_FLAGS " -D\"SAMC_PDF_GRID_DIR='${SAMC_PDF_GRID_DIR}'\" -g -O2 -Wall -fPIC -Iinclude -ffixed-line-length-none -x f77-cpp-input ")
@@ -60,12 +65,13 @@ if(NOT ROOT_FOUND)
    return()
 endif()
 
+#-------------------------------------------------------
 set(LINK_DIRECTORIES
    ${ROOT_LIBRARY_DIR}
    )
 link_directories( ${LINK_DIRECTORIES})
 
-
+#-------------------------------------------------------
 set(INCLUDE_DIRECTORIES
    ${ROOT_INCLUDE_DIR} )
 
@@ -121,7 +127,6 @@ configure_file (
 #----------------------------------------------------------------------------
 # Add the executable
 add_executable(samc-config samc-config.cxx )
-#add_executable(${myexe} ${mymain} ${sources} ${headers})
 
 #target_link_libraries(SAMC ${myObjects} 
 #   ${MYSQL_LIBRARIES} 
@@ -158,27 +163,28 @@ FILE(GLOB files "${CMAKE_CURRENT_SOURCE_DIR}/*.h" "${PROJECT_SOURCE_DIR}/include
 
 # -----------------------------------------------------------
 # Set the library version in the main CMakeLists.txt
-SET(SAMC_MAJOR_VERSION 0)
-SET(SAMC_MINOR_VERSION 0)
-SET(SAMC_PATCH_VERSION 0)
 SET(SAMC_VERSION "${SAMC_MAJOR_VERSION}.${SAMC_MINOR_VERSION}.${SAMC_PATCH_VERSION}")
 SET(SAMC_LIBRARY_PROPERTIES ${SAMC_LIBRARY_PROPERTIES}
     VERSION "${SAMC_VERSION}"
     SOVERSION "${SAMC_MAJOR_VERSION}"
     SUFFIX ".so"
 )
-set(SAMC_SRCS
-   ${General_SRCS}
-   ${Functions_SRCS}
-   )
+set(SAMC_SRCS ${General_SRCS})
 
 add_library(SAMC SHARED ${SAMC_SRCS})
 target_link_libraries(SAMC ${ROOT_LIBRARIES})
 add_dependencies(SAMC ROOTDICTS)
 set_target_properties(SAMC PROPERTIES ${SAMC_LIBRARY_PROPERTIES})
 
+
 # ------------------------------------------------------------------------------
-# Build the shared libraries 
+# Build the binary and ins 
+add_executable(samc2 src/SAMC.C)
+add_dependencies(samc2 SAMC)
+target_link_libraries(samc2 ${ROOT_LIBRARIES} SAMC)
+
+# ------------------------------------------------------------------------------
+# Install the shared libraries 
 
 foreach(aLib ${SAMC_LIB_NAMES})
    install(TARGETS "SAMC${aLib}" DESTINATION   lib)
@@ -193,16 +199,20 @@ endforeach(aLib)
 #install(TARGETS Physics DESTINATION lib) #${CMAKE_BINARY_DIR}/lib)
 
 # ------------------------------------------------------------------------------
-# Build the binary 
-#install(TARGETS SAMC DESTINATION ${CMAKE_BINARY_DIR}/lib)
+# install the binaries and libs
 install(TARGETS SAMC DESTINATION lib)
-INSTALL(FILES ${files} DESTINATION include/SAMC)
-
+install(FILES ${files} DESTINATION include/SAMC)
+install(TARGETS samc2 DESTINATION bin)
 install(TARGETS samc-config DESTINATION bin)
 
-MESSAGE("          SAMC_CXX_LIBS: ${SAMC_CXX_LIBS}")
-MESSAGE("       SAMC_CXX_LDFLAGS: ${SAMC_CXX_LDFLAGS}")
-MESSAGE("       SAMC_CXX_INC_DIR: ${SAMC_CXX_INC_DIR}")
+
+# ------------------------------------------------------------------------------
+# Build the binary 
+MESSAGE("         CMAKE_BINARY_DIR: ${CMAKE_BINARY_DIR}")
+MESSAGE("                SAMC_SRCS: ${SAMC_SRCS}")
+MESSAGE("            SAMC_CXX_LIBS: ${SAMC_CXX_LIBS}")
+MESSAGE("         SAMC_CXX_LDFLAGS: ${SAMC_CXX_LDFLAGS}")
+MESSAGE("         SAMC_CXX_INC_DIR: ${SAMC_CXX_INC_DIR}")
 MESSAGE("             CXX_COMPILER: ${CMAKE_CXX_COMPILER}")
 MESSAGE("              FC_COMPILER: ${CMAKE_FC_COMPILER}")
 MESSAGE("      CMAKE_Fortran_FLAGS: ${CMAKE_Fortran_FLAGS}")

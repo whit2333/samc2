@@ -1,5 +1,6 @@
 #include "SAMCEvent.h"
-
+#include "SAMCConstants.h"
+#include "SAMCManager.h"
 
 //______________________________________________________________________________
 SAMCEvent::SAMCEvent() {
@@ -14,10 +15,10 @@ SAMCEvent::~SAMCEvent() {
    Win_After_Mag.clear();
 }
 //______________________________________________________________________________
-SAMCEvent::SAMCEvent(SAMCEvent const&){
+SAMCEvent::SAMCEvent(const SAMCEvent&){
 }
 //______________________________________________________________________________
-SAMCEvent::SAMCEvent& operator=(SAMCEvent const&){
+SAMCEvent& SAMCEvent::operator=(const SAMCEvent&){
 }
 //______________________________________________________________________________
 int SAMCEvent::Process() {
@@ -39,7 +40,7 @@ int SAMCEvent::Process() {
    return 0;
 }
 //______________________________________________________________________________
-void SAMCEvent::AddOneMaterial(vector<Material>& aWin,const double& aX0,const double& arho,const double& aL,const double& aA,const int& aZ,string aName) {
+void SAMCEvent::AddOneMaterial(std::vector<Material>& aWin,const double& aX0,const double& arho,const double& aL,const double& aA,const int& aZ, std::string aName) {
    //To make sure read correctly, so I reverse the order compared with input file.
    Material a;
    a.Name=aName;
@@ -79,6 +80,8 @@ void SAMCEvent::Generator() {
    SetMaterial(Win_f);
    /*}}}*/
 
+   SAMCManager * man = SAMCManager::Instance();
+
    /*Set Beam Info(HCS and TCS){{{*/
    //know beam_x,beam_y,reactz_gen,E_s,theta,HRS_L
    //Set s,s_TCS,x_tg_gen,y_tg_gen,p_TCS,p_P,p_P_TCS
@@ -87,21 +90,21 @@ void SAMCEvent::Generator() {
    s(1)=beam_y; //cm
    reactz_gen+=-(beam_x)*tan(T_theta*DegToRad());
    s(2)=reactz_gen; //cm
-   target_edgepoint_TRCS(0)=theta/fabs(theta)*T_H/2;//if theta>0,T_H/2, if<0, -T_H/2 in Target Rotation Coordinate System(T_theta=0) not TCS, check Coordinate.svg
+   target_edgepoint_TRCS(0)=theta/fabs(theta)*man->T_H/2;//if theta>0,T_H/2, if<0, -T_H/2 in Target Rotation Coordinate System(T_theta=0) not TCS, check Coordinate.svg
    target_edgepoint_TRCS(1)=0;
-   target_edgepoint_TRCS(2)=T_L/2;//and z0=0
+   target_edgepoint_TRCS(2)=man->T_L/2;//and z0=0
 
    TLorentzVector lp_TRCS;//the interaction point in TRCS at T_theta=0
    lp_TRCS=s;
-   lp_TRCS(2)-=z0;
+   lp_TRCS(2)-=man->z0;
    //Printf("s(%g,%g,%g),target_edgepoint_TRCS(%g,%g,%g),lp_TRCS(%g,%g,%g)",s(0),s(1),s(2),target_edgepoint_TRCS(0),target_edgepoint_TRCS(1),target_edgepoint_TRCS(2),lp_TRCS(0),lp_TRCS(1),lp_TRCS(2));
    lp_TRCS.RotateY(-T_theta*DegToRad());
 
    s_TCS=s;
    s_TCS.RotateZ(PI/2);//passive ratation around HCS, so -(-PI/2)
    s_TCS.RotateX(theta_rad);//passive ratation around HCS, so -(-theta_rad)
-   s_TCS(0)-=D_x;
-   s_TCS(1)-=D_y;
+   s_TCS(0)-=man->D_x;
+   s_TCS(1)-=man->D_y;
 
    p_inter_point_TCS=s_TCS;
    reactz_TCS=s_TCS.Z();
@@ -170,7 +173,7 @@ void SAMCEvent::Generator() {
    //      z0  !
    //          reactz_gen
    //          <-lL
-   vector<Material>::iterator it=Win_Before_Mag.begin();//here only have the material before mag defined in input file.
+   std::vector<Material>::iterator it=Win_Before_Mag.begin();//here only have the material before mag defined in input file.
    double lHL=0; //if lHL<HRS_Lcm or <3.57m(See Hall_A_NIM), i assume it's air
    int FirstInWinBeforeMagBlock=0;
    imax=Win_Before_Mag.size();
@@ -198,7 +201,7 @@ void SAMCEvent::Generator() {
    double lL; //assume target is rentangle lL=distance between reactz_gen and edge of target
    //in TRCS x plane<--> y plane in TCS
    lL=target_edgepoint_TRCS(2)-lp_TRCS(2);//verticle distance between interaction point and edge plane of target
-   if ( lL>T_L ) {
+   if ( lL>man->T_L ) {
       Printf("target_edgepoint_TRCS(%g,%g,%g),lp_TRCS(%g,%g,%g)",target_edgepoint_TRCS(0),target_edgepoint_TRCS(1),target_edgepoint_TRCS(2),lp_TRCS(0),lp_TRCS(1),lp_TRCS(2));
    }
    lL*=tan(lphrad);
@@ -219,14 +222,14 @@ void SAMCEvent::Generator() {
 
    //Win_Before_Mag add Air before last material in the input file
    imax=Win_Before_Mag.size();
-   if ( (lHL)<(HRS_L) )
+   if ( (lHL)<(man->HRS_L) )
    {
       //http://pdg.lbl.gov/2009/AtomicNuclearProperties/HTML_PAGES/104.html
       double total=0.000124+0.755267+0.231781+0.012827;//total mass of component of air
       m0.Name="Air";
       m0.Z=int(6*0.000124/total+7*0.755267/total+8*0.231781/total+18*0.012827/total);
       m0.A=m0.Z/0.499;
-      m0.L=HRS_L-lHL;
+      m0.L=man->HRS_L-lHL;
 
       m0.rho=1.205e-03;
       m0.T=m0.L*m0.rho;
@@ -236,9 +239,9 @@ void SAMCEvent::Generator() {
       it--;
       Win_Before_Mag.insert(it,m0);
    }
-   else if ( (lHL)>HRS_L )
+   else if ( (lHL)>man->HRS_L )
    {
-      printf("[Error %s: Line %d] Total windows length=%f>HRS_L=%f.\n",__FILE__,__LINE__,(lHL+Win_Before_Mag[imax-1].L),HRS_L);
+      printf("[Error %s: Line %d] Total windows length=%f>HRS_L=%f.\n",__FILE__,__LINE__,(lHL+Win_Before_Mag[imax-1].L),man->HRS_L);
       exit(-3);
    }
    //Correct First Material.L in Win_Before_Mag Block of inputfile
@@ -264,16 +267,16 @@ void SAMCEvent::Generator() {
    //Set dp_gen,s_TCS,x_tg_gen,y_tg_gen,p_TCS,p_P,p_P_TCS
    //Set Q2,q2,btr,Win_Before_Mag[0].bt
    //x_tg_gen,y_tg_gen,see Set Beam Info(HCS and TCS)
-   switch ( Which_Kin )
+   switch ( man->Which_Kin )
    {
       case 1: //elastic
-         E_p=gRandom->Gaus(0,P0*3e-4);
+         E_p=gRandom->Gaus(0,man->P0*3e-4);
          E_p+=E_s/(1+2*E_s*sinsq/Target.M);
          break;
       case 2: //quasi-elastic
       case 0: //phase default
       default:
-         E_p=P0*(1+dp_gen);
+         E_p=man->P0*(1+dp_gen);
    }
    Q2=4*E_s*E_p*sinsq;
    q2=-Q2;
@@ -284,13 +287,10 @@ void SAMCEvent::Generator() {
    p_TCS(3)=E_p;//MeV
    p_P(3)=E_p;
    p_P_TCS(3)=E_p;
-   dp_gen=(E_p-P0)/P0;
+   dp_gen=(E_p-man->P0)/man->P0;
    /*}}}*/
 
 }
-/*}}}*/
-
-/*int RefineTg(){{{*/
 //______________________________________________________________________________
 int SAMCEvent::RefineTg()
 {
@@ -300,9 +300,10 @@ int SAMCEvent::RefineTg()
    p_TCS_ref=p_inter_point_TCS;
    p_P_TCS_ref=p_P_TCS;
 
+   SAMCManager * man = SAMCManager::Instance();
    size_t i;
    size_t imax;
-   vector<Material> Win_Empty;//tmp use
+   std::vector<Material> Win_Empty;//tmp use
 
    Material mixture;
 
@@ -328,7 +329,7 @@ int SAMCEvent::RefineTg()
    dp_ref=dp_gen;
    E_p=p_P_TCS_ref(3);
 
-   if ( IsEnergyLoss )
+   if ( man->IsEnergyLoss )
    {
       //Fix me: Do I need to count the energy loss due to windows after target?
       //I think so. So I add them.
@@ -352,7 +353,7 @@ int SAMCEvent::RefineTg()
       q2=-Q2;
       p_TCS_ref(3)=E_p;//MeV
       p_P_TCS_ref(3)=E_p;
-      dp_ref=(E_p-P0)/P0;
+      dp_ref=(E_p-man->P0)/man->P0;
    }
 
 
@@ -365,11 +366,10 @@ int SAMCEvent::RefineTg()
    //////////////////////////////////////////////////////////////////
    return 0;
 }
-/*}}}*/
-
-/*int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,const double& adp){{{*/
-int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,const double& adp)
+//______________________________________________________________________________
+int SAMCEvent::ToFp(const double& ax,const double& ay,const double& ath,const double& aph,const double& adp)
 {
+   SAMCManager * man = SAMCManager::Instance();
    //return Number of Event needs to be added. just 1 ^_^
    //cm->meter, ath,aph,adp are correct
    //must be float, otherwise cannot pass to fortran correctly. float<->dimension
@@ -397,7 +397,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_e_q1ex_(matrix,msize)*100; //cm
       q1ex[0]=xtest/100;
       q1ex[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>Q1_Radius*Q1_Radius )
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>man->Q1_Radius*man->Q1_Radius )
       {
          //(xtets!=xtest)==true to avoid nan(Not a number)
          //printf("Blocked by Q1 Exit.\n");
@@ -413,7 +413,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_e_dent_(matrix,msize)*100; //cm
       dent[0]=xtest/100;
       dent[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>D_X_Radius || fabs(ytest)>D_Y_L*(1-1.25*xtest/840) ) //nan
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)> man->D_X_Radius || fabs(ytest)>man->D_Y_L*(1-1.25*xtest/840) ) //nan
       {
          //printf("Blocked by Dipole Entrance.\n");
          return 1;
@@ -426,7 +426,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_e_dext_(matrix,msize)*100; //cm
       dext[0]=xtest/100;
       dext[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>D_X_Radius || fabs(ytest)>D_Y_L*(1-1.25*xtest/840) ) //nan
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>man->D_X_Radius || fabs(ytest)>man->D_Y_L*(1-1.25*xtest/840) ) //nan
       {
          //printf("Blocked by Dipole Exit.\n");
          return 1;
@@ -439,7 +439,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_e_q3en_(matrix,msize)*100; //cm
       q3en[0]=xtest/100;
       q3en[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>Q3_Entrance_Radius*Q3_Entrance_Radius )
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>man->Q3_Entrance_Radius*man->Q3_Entrance_Radius )
       {
          //printf("Blocked by Q3 Entrance.\n");
          return 1;
@@ -453,7 +453,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_e_q3ex_(matrix,msize)*100; //cm
       q3ex[0]=xtest/100;
       q3ex[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>Q3_Exit_Radius*Q3_Exit_Radius )
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>man->Q3_Exit_Radius*man->Q3_Exit_Radius )
       {
          //printf("Blocked by Q3 Exit.\n");
          return 1;
@@ -474,7 +474,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_h_q1ex_(matrix,msize)*100; //cm
       q1ex[0]=xtest/100;
       q1ex[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>Q1_Radius*Q1_Radius )
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>man->Q1_Radius*man->Q1_Radius )
       {
          //(xtets!=xtest)==true to avoid nan(Not a number)
          //printf("Blocked by Q1 Exit.\n");
@@ -491,7 +491,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_h_dent_(matrix,msize)*100; //cm
       dent[0]=xtest/100;
       dent[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>D_X_Radius || fabs(ytest)>D_Y_L*(1-1.25*xtest/840) ) //nan
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>man->D_X_Radius || fabs(ytest)>man->D_Y_L*(1-1.25*xtest/840) ) //nan
       {
          //printf("Blocked by Dipole Entrance.\n");
          return 1;
@@ -504,7 +504,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_h_dext_(matrix,msize)*100; //cm
       dext[0]=xtest/100;
       dext[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>D_X_Radius || fabs(ytest)>D_Y_L*(1-1.25*xtest/840) ) //nan
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || fabs(xtest)>man->D_X_Radius || fabs(ytest)>man->D_Y_L*(1-1.25*xtest/840) ) //nan
       {
          //printf("Blocked by Dipole Exit.\n");
          return 1;
@@ -517,7 +517,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_h_q3en_(matrix,msize)*100; //cm
       q3en[0]=xtest/100;
       q3en[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>Q3_Entrance_Radius*Q3_Entrance_Radius )
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>man->Q3_Entrance_Radius*man->Q3_Entrance_Radius )
       {
          //printf("Blocked by Q3 Entrance.\n");
          return 1;
@@ -530,7 +530,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       ytest=y_h_q3ex_(matrix,msize)*100; //cm
       q3ex[0]=xtest/100;
       q3ex[1]=ytest/100;
-      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>Q3_Exit_Radius*Q3_Exit_Radius )
+      if ( (xtest!=xtest)==true || (ytest!=ytest)==true || (xtest*xtest+ytest*ytest)>man->Q3_Exit_Radius*man->Q3_Exit_Radius )
       {
          //printf("Blocked by Q3 Exit.\n");
          return 1;
@@ -543,7 +543,7 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       th_fp=t_h_fp_(matrix,msize); //(tantheta)
       ph_fp=p_h_fp_(matrix,msize); //(tanphi)
    }
-   if ( IsMultiScat)
+   if ( man->IsMultiScat)
    {
       //Material mixture=GetMixture(Win_After_Mag);
       //mixture.TR*=sqrt(ph_fp*ph_fp+th_fp*th_fp);
@@ -564,9 +564,9 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
       }
       Vacuum.Name="Vacuum";
       Vacuum.TR=0;
-      Transport(p_FP,p_P_FP,Vacuum,IsMultiScat);//Just change th_fp,ph_fp
+      Transport(p_FP,p_P_FP,Vacuum,man->IsMultiScat);//Just change th_fp,ph_fp
       for ( i = 0; i < Win_After_Mag.size(); ++i ) {
-         Transport(p_FP,p_P_FP,Win_After_Mag[i],IsMultiScat);//Just change th_fp,ph_fp
+         Transport(p_FP,p_P_FP,Win_After_Mag[i],man->IsMultiScat);//Just change th_fp,ph_fp
       }
       //Transport(p_FP,p_P_FP,mixture,IsMultiScat);//Just change th_fp,ph_fp
       th_fp=p_P_FP(0)/p_P_FP(2);
@@ -576,10 +576,10 @@ int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,c
    }
    //Smearing
    TRandom* tr=new TRandom();
-   x_fp=tr->Gaus(x_fp,VDC_Res_x);
-   y_fp=tr->Gaus(y_fp,VDC_Res_y);
-   th_fp=tr->Gaus(th_fp,VDC_Res_th/1000.);
-   ph_fp=tr->Gaus(ph_fp,VDC_Res_ph/1000.);
+   x_fp=tr->Gaus(x_fp,man->VDC_Res_x);
+   y_fp=tr->Gaus(y_fp,man->VDC_Res_y);
+   th_fp=tr->Gaus(th_fp,man->VDC_Res_th/1000.);
+   ph_fp=tr->Gaus(ph_fp,man->VDC_Res_ph/1000.);
    th_fp_no_ort=th_fp;
    delete tr;
    matrix[0]=x_fp/100.;
@@ -601,6 +601,8 @@ int SAMCEvent::ReconstructTg(const double& ax,const double& ay,const double& ath
    float matrix[MSIZE]={ax/100.,ath,ay/100,aph,axtg/100};
    int msize=MSIZE;
 
+   SAMCManager * man = SAMCManager::Instance();
+
    x_tg_rec=axtg;
    float rf_y,rf_d,rf_th,rf_ph;
    if ( theta>0 )
@@ -614,7 +616,7 @@ int SAMCEvent::ReconstructTg(const double& ax,const double& ay,const double& ath
       rf_d=dp_rec;
       rf_th=th_tg_rec;
       rf_ph=ph_tg_rec;
-      if ( fNCuts<=0 ) {
+      if ( man->fNCuts<=0 ) {
          rvalue=left_rfunction_(&rf_y,&rf_d,&rf_th,&rf_ph);
       }
    }
@@ -628,17 +630,17 @@ int SAMCEvent::ReconstructTg(const double& ax,const double& ay,const double& ath
       rf_d=dp_rec;
       rf_th=th_tg_rec;
       rf_ph=ph_tg_rec;
-      if ( fNCuts<=0 ) {
+      if ( man->fNCuts<=0 ) {
          rvalue=right_rfunction_(&rf_y,&rf_d,&rf_th,&rf_ph);
       }
    }
-   if ( fNCuts>0 ) {
+   if ( man->fNCuts>0 ) {
       rvalue=CalcRValue(rf_th,rf_ph,rf_y,rf_d);
    }
-   TLorentzVector rec(x_tg_rec,y_tg_rec,0,P0*(1+dp_rec));
+   TLorentzVector rec(x_tg_rec,y_tg_rec,0,man->P0*(1+dp_rec));
 
-   rec(0)+=D_x;
-   rec(1)+=D_y;
+   rec(0)+=man->D_x;
+   rec(1)+=man->D_y;
    rec(0)+=reactz_TCS*th_tg_rec;
    rec(1)+=reactz_TCS*ph_tg_rec;
    rec(2)+=reactz_TCS;
@@ -657,9 +659,9 @@ int SAMCEvent::ReconstructTg(const double& ax,const double& ay,const double& ath
    if (
          //fabs(reactz_rec/100)<0.1 &&
          //fabs(y_tg_rec/100)<=0.01 &&
-         fabs(dp_rec)<delta_dp/2 &&
-         fabs(th_tg_rec)<delta_th/2 &&
-         fabs(ph_tg_rec)<delta_ph/2
+         fabs(dp_rec)<man->delta_dp/2 &&
+         fabs(th_tg_rec)<man->delta_th/2 &&
+         fabs(ph_tg_rec)<man->delta_ph/2
          //fabs(ph_tg_rec)<delta_ph/2
       )
       IsQualified=1;
@@ -877,7 +879,7 @@ void SAMCEvent::SetMaterial(Material& aMaterial)
    aMaterial.bt=b(aMaterial.Z)*aMaterial.TR;
 }
 //______________________________________________________________________________
-Material SAMCEvent::GetMixture(const vector<Material>& aWin)
+Material SAMCEvent::GetMixture(const std::vector<Material>& aWin)
 {
    size_t i;
    size_t imax=aWin.size();
@@ -899,13 +901,14 @@ Material SAMCEvent::GetMixture(const vector<Material>& aWin)
    return mixture;
 }
 //______________________________________________________________________________
-void SAMCEvent::GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const vector<Material>& aWinBefore,const vector<Material>& aWinAfter,const double& aL,const double& aOffset)
+void SAMCEvent::GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const std::vector<Material>& aWinBefore,const std::vector<Material>& aWinAfter,const double& aL,const double& aOffset)
 {
    //Get Refinement aoPos and aoMom for each plane on q1,q2,d,q3,fp
    //ao means input and output
    //aL=Vacuum Length, aOffset=distance between interaction point and z=0 in TCS
-   vector<Material> AllWins;
+   std::vector<Material> AllWins;
    Material Vacuum;
+   SAMCManager * man = SAMCManager::Instance();
 
    AllWins.clear();
    AllWins=aWinBefore;
@@ -920,12 +923,12 @@ void SAMCEvent::GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const v
    Vacuum.L=0;
    //Printf("Pos(%g,%g,%g),(th=%g,ph=%g)",aoPos(0),aoPos(1),aoPos(2),aoMom(0)/aoMom(2),aoMom(1)/aoMom(2));
    for ( i = 0; i < AllWins.size(); ++i ) {
-      Transport(aoPos,aoMom,AllWins[i],IsMultiScat);//move to mag
+      Transport(aoPos,aoMom,AllWins[i],man->IsMultiScat);//move to mag
       //Printf("Pos(%g,%g,%g),(th=%g,ph=%g)",aoPos(0),aoPos(1),aoPos(2),aoMom(0)/aoMom(2),aoMom(1)/aoMom(2));
       Vacuum.L-=AllWins[i].L;
    }
    Vacuum.L+=aOffset;
-   Transport(aoPos,aoMom,Vacuum,IsMultiScat);//back to ztg=0 in TCS
+   Transport(aoPos,aoMom,Vacuum,man->IsMultiScat);//back to ztg=0 in TCS
    //Printf("Pos(%g,%g,%g),(th=%g,ph=%g)",aoPos(0),aoPos(1),aoPos(2),aoMom(0)/aoMom(2),aoMom(1)/aoMom(2));
 }
 //______________________________________________________________________________
@@ -946,6 +949,7 @@ double SAMCEvent::sigma_M(const double& aE,const double& aTheta)
 double SAMCEvent::CalcRValue(const double& ath,const double& aph,const double& ay,const double& adp)
 {
    int i,j,k;
+   SAMCManager * man = SAMCManager::Instance();
 
    i=0;
    double* lxy=new double[NELEMENTS];
@@ -954,29 +958,30 @@ double SAMCEvent::CalcRValue(const double& ath,const double& aph,const double& a
    lxy[i++]=ay;
    lxy[i++]=adp;
    double prod=-1000;
-   if ( fNCuts>0 ) {
+   if ( man->fNCuts>0 ) {
       double lnormal;
       double lomega;
-      for ( i = 0; i < fNCuts; ++i ) {
+      for ( i = 0; i < man->fNCuts; ++i ) {
          //slope*x+intersection-y=0
 
-         lnormal=sqrt(fLineProperty[i][LINE_SLOPE]*fLineProperty[i][LINE_SLOPE]+1);//Get normalized factor (sqrt(a*a+b*b)) a=slope b=-1
-         lomega=0;
-         k=0;
+         lnormal = sqrt((man->fLineProperty[i][LINE_SLOPE]) * (man->fLineProperty[i][LINE_SLOPE]+1));//Get normalized factor (sqrt(a*a+b*b)) a = slope b = -1
+         lomega  = 0;
+         k       = 0;
+
          for ( j = 0; j < NELEMENTS; ++j ) {
-            lomega+=fXY[i][j]*pow(-1.0,fXY[i][j]+k)*pow(fLineProperty[i][LINE_SLOPE],k)*lxy[j];
+            lomega += man->fXY[i][j]*pow(-1.0,man->fXY[i][j]+k)*pow(man->fLineProperty[i][LINE_SLOPE],k)*lxy[j];
             //if ( i==1 ) {
             //	Printf("i=%d,j=%d,k=%d,lomega=%g",i,j,k,lomega);
             //	Printf("fXY[%d][%d]=%d,k=%d,fLineProperty[%d][%d]=%g,lxy[%d]=%g,lomega=%d*pow(-1,%d)*pow(%g,%d)*%g=%g",i,j,fXY[i][j],k,i,LINE_SLOPE,fLineProperty[i][LINE_SLOPE],j,lxy[j],fXY[i][j],fXY[i][j]+k,fLineProperty[i][LINE_SLOPE],k,lxy[j],fXY[i][j]*pow(-1.0,fXY[i][j]+k)*pow(fLineProperty[i][LINE_SLOPE],k)*lxy[j]);
 
             //}
-            k+=fXY[i][j];
+            k += man->fXY[i][j];
          }
-         lomega+=fLineProperty[i][LINE_INTERSECTION];
-         lomega/=lnormal*fLineProperty[i][LINE_SIGN];
+         lomega += man->fLineProperty[i][LINE_INTERSECTION];
+         lomega /= lnormal*man->fLineProperty[i][LINE_SIGN];
          //Printf("lomega[%d]=%g",i,lomega);
          if ( i==0 ) {
-            prod=lomega;
+            prod = lomega;
          }
          else {
             prod=PROD_AND(prod,lomega);

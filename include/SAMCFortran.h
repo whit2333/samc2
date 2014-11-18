@@ -1,5 +1,5 @@
 #ifndef SAMCFortran_HH
-#define SAMCFortran_HH
+#define SAMCFortran_HH 1
 
 
 extern "C" {

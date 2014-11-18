@@ -1,10 +1,11 @@
 #---------------------------------------------------------------------------
 set(General_files 
-   SAMCEvent
-   withxycollimator
    SAMC
+   SAMCEvent
+   SAMCConstants
+   SAMCManager
+   #withxycollimator
    )
-
 set(General_SRCS)
 set(General_HEADERS)
 foreach(infileName ${General_files})
@@ -12,16 +13,18 @@ foreach(infileName ${General_files})
    SET(General_HEADERS ${General_HEADERS} ${PROJECT_SOURCE_DIR}/include/${infileName}.h)
 endforeach(infileName)
 
+#---------------------------------------------------------------------------
 set(GeneralFortran_files
    Left_funcs
    Left_r-function
    Right_funcs
    Right_r-function
    )
-
 set(GeneralFortran_SRCS)
+set(GeneralFortran_OBJECTS)
 foreach(infileName ${GeneralFortran_files})
    SET(GeneralFortran_SRCS ${GeneralFortran_SRCS} "${PROJECT_SOURCE_DIR}/src/${infileName}.f")
+   SET(GeneralFortran_OBJECTS ${GeneralFortran_OBJECTS} "${infileName}.o")
 endforeach(infileName)
 
 # set everything needed for the root dictonary and create the
