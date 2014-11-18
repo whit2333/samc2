@@ -495,12 +495,12 @@ int main(int argc, char** argv) {
       Event->T_theta=atof(inputdata[j++].c_str());
       while ( atof(inputdata[j].c_str())>=0 )
       {
-         Event->AddOneMaterial(Event->Win_Before_Mag,atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atoi(inputdata[j++].c_str()),inputdata[j++].c_str());
+         Event->AddOneSAMCMaterial(Event->Win_Before_Mag,atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atoi(inputdata[j++].c_str()),inputdata[j++].c_str());
       }
       j++;
       while ( atof(inputdata[j].c_str())>=0 )
       {
-         Event->AddOneMaterial(Event->Win_After_Mag,atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atoi(inputdata[j++].c_str()),inputdata[j++].c_str());
+         Event->AddOneSAMCMaterial(Event->Win_After_Mag,atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atoi(inputdata[j++].c_str()),inputdata[j++].c_str());
       }
 
       if ( !userdefgen_filename.empty() ) {

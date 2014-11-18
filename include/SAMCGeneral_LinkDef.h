@@ -6,34 +6,37 @@
 #pragma link C++ all typedef;
 
 
-//#pragma link C++ global fgDBManager+;
-//#pragma link C++ class NucDBManager+;
-//#pragma link C++ class NucDBDatabase+;
+#pragma link C++ global fgSAMCManager+;
+#pragma link C++ class  SAMCManager+;
+#pragma link C++ class  SAMCEvent+;
+#pragma link C++ class  SAMCMaterial+;
+
+//#pragma link C++ class SAMCDatabase+;
 //
-//#pragma link C++ class NucDBVariable+;
-//#pragma link C++ class NucDBDiscreteVariable+;
-//#pragma link C++ class NucDBBinnedVariable+;
-//#pragma link C++ class NucDBErrorBar+;
-//#pragma link C++ class NucDBDataPoint+;
-//#pragma link C++ class NucDBDependentVariable+;
+//#pragma link C++ class SAMCVariable+;
+//#pragma link C++ class SAMCDiscreteVariable+;
+//#pragma link C++ class SAMCBinnedVariable+;
+//#pragma link C++ class SAMCErrorBar+;
+//#pragma link C++ class SAMCDataPoint+;
+//#pragma link C++ class SAMCDependentVariable+;
 //
-//#pragma link C++ class NucDBInvariantMassDV+;
-//#pragma link C++ class NucDBPhotonEnergyDV+;
-//#pragma link C++ class NucDBxBjorkenDV+;
+//#pragma link C++ class SAMCInvariantMassDV+;
+//#pragma link C++ class SAMCPhotonEnergyDV+;
+//#pragma link C++ class SAMCxBjorkenDV+;
 //
-//#pragma link C++ class NucDBMeasurement+;
-//#pragma link C++ class NucDBExperiment+;
-//#pragma link C++ class NucDBCalculation+;
-//#pragma link C++ class NucDBPaper+;
-//#pragma link C++ class NucDBReference+;
+//#pragma link C++ class SAMCMeasurement+;
+//#pragma link C++ class SAMCExperiment+;
+//#pragma link C++ class SAMCCalculation+;
+//#pragma link C++ class SAMCPaper+;
+//#pragma link C++ class SAMCReference+;
 //
-//#pragma link C++ class NucDBUnit+;
-//#pragma link C++ class NucDBInverseUnit+;
-//#pragma link C++ class NucDBEnergyUnit+;
-//#pragma link C++ class NucDBEnergyMeV+;
-//#pragma link C++ class NucDBMomentumUnit+;
-//#pragma link C++ class NucDBMassUnit+;
-//#pragma link C++ class NucDBXSectionUnit+;
+//#pragma link C++ class SAMCUnit+;
+//#pragma link C++ class SAMCInverseUnit+;
+//#pragma link C++ class SAMCEnergyUnit+;
+//#pragma link C++ class SAMCEnergyMeV+;
+//#pragma link C++ class SAMCMomentumUnit+;
+//#pragma link C++ class SAMCMassUnit+;
+//#pragma link C++ class SAMCXSectionUnit+;
 
 
 #endif

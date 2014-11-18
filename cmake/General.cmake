@@ -1,6 +1,7 @@
 #---------------------------------------------------------------------------
 set(General_files 
    SAMC
+   SAMCMaterial
    SAMCEvent
    SAMCConstants
    SAMCManager
@@ -19,6 +20,7 @@ set(GeneralFortran_files
    Left_r-function
    Right_funcs
    Right_r-function
+   monte_trans_hrs
    )
 set(GeneralFortran_SRCS)
 set(GeneralFortran_OBJECTS)

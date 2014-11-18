@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "SAMCMaterial.h"
 #include "SAMCFortran.h"
 #include "TLorentzVector.h"
 #include "TVector3.h"
@@ -10,20 +11,6 @@
 //#include "Your_Cross_Section.h" //The file you store your own cross section models, call it when caluclating cs_Final
 
 #define MSIZE 5
-
-struct Material {
-   std::string Name; //Name
-   int Z;//Z
-   double A;//A
-   double M;//Mass
-   double T;//Thickness g/cm^2
-   double TR;//Thickness in Rad_Len
-   double rho;//density g/cm^3
-   double bt;//bt
-   double X0; //Radiation Length g/cm^2
-   double L;//Length:distance along Z axix in TCS
-   ClassDef(Material,0)
-};
 
 class SAMCEvent {
 
@@ -37,7 +24,7 @@ class SAMCEvent {
 
       int Process() ;
 
-      void AddOneMaterial(std::vector<Material>& aWin,const double& aX0,const double& arho,const double& aL,const double& aA,const int& aZ,std::string aName) ;
+      void AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin,const double& aX0,const double& arho,const double& aL,const double& aA,const int& aZ,std::string aName) ;
 
    private:
 
@@ -60,18 +47,18 @@ class SAMCEvent {
 
    private:
 
-      double Ion_Loss(const double& aE0,const Material& aMaterial) ;
+      double Ion_Loss(const double& aE0,const SAMCMaterial& aSAMCMaterial) ;
 
       double Bremss_Loss(const double& aE0,const double& abt) ;
 
       double eta(const int& aZ); 
       double b(const int& aZ) ;
       double Rad_Len(const int& aZ,const double& aA) ;
-      void Transport(TLorentzVector& aPos,TLorentzVector& aMom,const Material& aMaterial,const bool& aIsMultiScatt=false) ;
+      void Transport(TLorentzVector& aPos,TLorentzVector& aMom,const SAMCMaterial& aSAMCMaterial,const bool& aIsMultiScatt=false) ;
       double MultiScattering(const double& aE,const double& aTR) ;
-      void SetMaterial(Material& aMaterial) ;
-      Material GetMixture(const std::vector<Material>& aWin) ;
-      void GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const std::vector<Material>& aWinBefore,const std::vector<Material>& aWinAfter,const double& aL,const double& aOffset) ;
+      void SetSAMCMaterial(SAMCMaterial& aSAMCMaterial) ;
+      SAMCMaterial GetMixture(const std::vector<SAMCMaterial>& aWin) ;
+      void GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const std::vector<SAMCMaterial>& aWinBefore,const std::vector<SAMCMaterial>& aWinAfter,const double& aL,const double& aOffset) ;
       double sigma_M(const double& aE,const double& aTheta) ;
 
       double CalcRValue(const double& ath,const double& aph,const double& ay,const double& adp) ;
@@ -87,10 +74,10 @@ class SAMCEvent {
       int IsPassed; //if pass through the magnet, 1=true, 0=false(not pass)
       int IsQualified; //if rec var is in the range of gen, 1=true, 0=false(not qualified)
       double theta; //scattering angle(deg)
-      Material Target; //target material
-      Material Win_i,Win_f;//front[inital] window and back[final] window, stick with target
-      std::vector<Material> Win_Before_Mag;//windows after target and before magnetic
-      std::vector<Material> Win_After_Mag;//windows after target and after magnetic
+      SAMCMaterial Target; //target SAMCMaterial
+      SAMCMaterial Win_i,Win_f;//front[inital] window and back[final] window, stick with target
+      std::vector<SAMCMaterial> Win_Before_Mag;//windows after target and before magnetic
+      std::vector<SAMCMaterial> Win_After_Mag;//windows after target and after magnetic
       double T_theta; //target angle(deg), the central line of target is along beam
       //----
       //|  |
@@ -190,7 +177,7 @@ class SAMCEvent {
 
       void Print() ;
 
-      void PrintMaterial(const Material& aMaterial) ;
+      void PrintMaterial(const SAMCMaterial& aMaterial) ;
 
    ClassDef(SAMCEvent,0)
 };
