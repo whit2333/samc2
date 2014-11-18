@@ -11,11 +11,12 @@ This new version uses proper C++ techniques. Some of the major differences and c
 
  * A good object model (as opposed to one object which does everthing)
  * Event class is actually a streamed event class for analysis. 
- * Readable code 
  * New build system using CMake. 
+ * Flexible configuration files (YAML)
  * Directory structure separates source implementation and headers.
  * samc-config for build and linking.
  * ROOT libraries for scripting in addition to stand alone simulation
+ * Readable code 
  * 
 
 *NOTE*: This version is almost entirely different from the original SAMC. Please follow this documentation for 

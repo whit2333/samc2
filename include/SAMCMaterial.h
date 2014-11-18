@@ -7,23 +7,12 @@ class SAMCMaterial : public TNamed {
 
    public:
 
-      SAMCMaterial(){
-         // These numbers are made up
-         Z   = 1;
-         A   = 1;
-         M   = 0.938;
-         rho = 1.0;
-         T   = 1.0;
-         TR  = 1.0;
-         bt  = 0.01;
-         X0  = 1.0;
-         L   = 1.0;
-      }
+      SAMCMaterial();
+      virtual ~SAMCMaterial();
 
-      virtual ~SAMCMaterial(){
-      }
+      SAMCMaterial(const SAMCMaterial& v) ;
+      const SAMCMaterial& operator=(const SAMCMaterial& v) ;
 
-      std::string Name; // Name
       int    Z;         // Z
       double A;         // A
       double M;         // Mass
