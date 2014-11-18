@@ -1,7 +1,7 @@
 #############Start
 ./c12_L.root   #Root File Name
 #c12_Seed.dat  #External Seed files, see ./Generator for more info
-500         #Number of Events
+10000         #Number of Events
 #############Debug Flags
 1              #Enable multi-scattering (default=true)
 0              #Enable energy loss (default=false)
