@@ -40,10 +40,12 @@ FORTRAN subroutines.
 Authors and Contributors
 ------------------------
 
-This major rewrite
+Authors of samc2 
+
  * Whitney R. Armstrong (whit@temple.edu)    
 
 Previous versions:
+
  * A. Deur (Original fortran version)
  * John LeRose  (SNAKE) HRS transport functions 
  * Huan Yao   (SAMC) First attempt to use C++.
