@@ -44,6 +44,7 @@ int SAMCEvent::Process() {
 }
 //______________________________________________________________________________
 void SAMCEvent::AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin,const double& aX0,const double& arho,const double& aL,const double& aA,const int& aZ, std::string aName) {
+
    //To make sure read correctly, so I reverse the order compared with input file.
    SAMCMaterial a;
    a.Name = aName;

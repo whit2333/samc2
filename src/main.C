@@ -212,99 +212,103 @@ int ReadDatabase( const std::string& aFileName ) {
 int main(int argc, char** argv) {
 
    srand(time(NULL));
+
    getargs(argc,argv);
+
    int i,j,k,fail_events = 0;
+
+   printf("Start...\n");
 
    SAMCManager * man = SAMCManager::Instance();
 
-   printf("Start...\n");
-   std::vector<std::string> inputdata;
+   man->LoadConfig(man->fFile_Name.c_str());
 
-   /*Read samcfile{{{*/
-   FILE* samcfile;
-   samcfile = fopen(man->fFile_Name.c_str(),"r");
-   char buf[CHAR_LEN];
-   char data[CHAR_LEN];
+   //std::vector<std::string> inputdata;
+   ///*Read samcfile{{{*/
+   //FILE* samcfile;
+   //samcfile = fopen(man->fFile_Name.c_str(),"r");
+   //char buf[CHAR_LEN];
+   //char data[CHAR_LEN];
 
-   while ( fgets(buf,CHAR_LEN,samcfile) ) {
-      i=0;
-      while ( buf[i]==' ' ) {
-         i++;
-      }
-      if ( buf[i]!='#' ) {
-         j=0;
-         while ( buf[i]!='#' && buf[i]!='\0' )
-         {
-            data[j]=buf[i];
-            i++; j++;
-         }
-         data[j]='\0';
-         while ( data[--j]==' ' || data[j]=='\t' )
-         {
-            //remove space or tab at the end of data
-            data[j]='\0';
-         }
-         inputdata.push_back(data);
-      }
-      //else it's comment, skipped
-   }
-   fclose(samcfile);
+   //while ( fgets(buf,CHAR_LEN,samcfile) ) {
+   //   i=0;
+   //   while ( buf[i]==' ' ) {
+   //      i++;
+   //   }
+   //   if ( buf[i]!='#' ) {
+   //      j=0;
+   //      while ( buf[i]!='#' && buf[i]!='\0' )
+   //      {
+   //         data[j]=buf[i];
+   //         i++; j++;
+   //      }
+   //      data[j]='\0';
+   //      while ( data[--j]==' ' || data[j]=='\t' )
+   //      {
+   //         //remove space or tab at the end of data
+   //         data[j]='\0';
+   //      }
+   //      inputdata.push_back(data);
+   //   }
+   //   //else it's comment, skipped
+   //}
+   //fclose(samcfile);
    /*}}}*/
 
    /*Set Global Value{{{*/
-   printf("Setting Global Value...\n");
+   //printf("Setting Global Value...\n"); // ... oh no you wont -whit
    k = 0;
-   std::string samc_rootfilename   = inputdata[k++];
-   std::string userdefgen_filename = inputdata[k++];
+   std::string samc_rootfilename   = man->fOutputFileName;
 
-   int Num_Of_Events = 0;
+   std::string userdefgen_filename = ""; // Not sure what this is really used for -whit
 
-   if ( IsANumber(userdefgen_filename) ) {
-      Num_Of_Events       = atoi(userdefgen_filename.c_str());
-      userdefgen_filename = "";
-   } else {
-      Num_Of_Events = atoi(inputdata[k++].c_str());
-   }
+   int Num_Of_Events = man->fNumberOfEvents;
 
-   // This is a nightmare!
-   man->fNumberOfEvents    = Num_Of_Events;
-   man->IsMultiScat        = atoi(inputdata[k++].c_str());
-   man->IsEnergyLoss       = atoi(inputdata[k++].c_str());
-   man->Which_Kin          = atoi(inputdata[k++].c_str());
-   man->HRS_L              = atof(inputdata[k++].c_str());
-   man->Q1_Exit_Eff_L      = atof(inputdata[k++].c_str());
-   man->D_Entrance_Eff_L   = atof(inputdata[k++].c_str());
-   man->D_Exit_Eff_L       = atof(inputdata[k++].c_str());
-   man->Q3_Entrance_Eff_L  = atof(inputdata[k++].c_str());
-   man->Q3_Exit_Eff_L      = atof(inputdata[k++].c_str());
-   man->FP_Eff_L           = atof(inputdata[k++].c_str());
-   man->Q1_Radius          = atof(inputdata[k++].c_str());
-   man->D_X_Radius         = atof(inputdata[k++].c_str());
-   man->D_Y_L              = atof(inputdata[k++].c_str());
-   man->Q3_Entrance_Radius = atof(inputdata[k++].c_str());
-   man->Q3_Exit_Radius     = atof(inputdata[k++].c_str());
-   man->VDC_Res_x          = atof(inputdata[k++].c_str());
-   man->VDC_Res_y          = atof(inputdata[k++].c_str());
-   man->VDC_Res_th         = atof(inputdata[k++].c_str());
-   man->VDC_Res_ph         = atof(inputdata[k++].c_str());
-   man->D_x                = atof(inputdata[k++].c_str());
-   man->D_y                = atof(inputdata[k++].c_str());
-   man->delta_dp           = atof(inputdata[k++].c_str());
-   man->delta_th           = atof(inputdata[k++].c_str());
-   man->delta_ph           = atof(inputdata[k++].c_str());
-   man->Which_Beam_Profile = atoi(inputdata[k++].c_str());
-   man->raster_x_size      = atof(inputdata[k++].c_str());
-   man->raster_y_size      = atof(inputdata[k++].c_str());
-   man->gaus_x_sigma       = atof(inputdata[k++].c_str());
-   man->gaus_y_sigma       = atof(inputdata[k++].c_str());
-   man->beam_x_center      = atof(inputdata[k++].c_str());
-   man->beam_y_center      = atof(inputdata[k++].c_str());
-   man->z0                 = atof(inputdata[k++].c_str());
-   man->T_L                = atof(inputdata[k++].c_str());
-   man->T_H                = atof(inputdata[k++].c_str());
-   man->RfunDB_FileName    = inputdata[k++];
-   man->E0                 = atof(inputdata[k++].c_str());
-   man->P0                 = atof(inputdata[k++].c_str());
+   //if ( IsANumber(userdefgen_filename) ) {
+   //   Num_Of_Events       = atoi(userdefgen_filename.c_str());
+   //   userdefgen_filename = "";
+   //} else {
+   //   Num_Of_Events = atoi(inputdata[k++].c_str());
+   //}
+   //// This is a nightmare!
+   //man->fNumberOfEvents    = Num_Of_Events;
+   //man->IsMultiScat        = atoi(inputdata[k++].c_str());
+   //man->IsEnergyLoss       = atoi(inputdata[k++].c_str());
+   //man->Which_Kin          = atoi(inputdata[k++].c_str());
+   //man->HRS_L              = atof(inputdata[k++].c_str());
+   //man->Q1_Exit_Eff_L      = atof(inputdata[k++].c_str());
+   //man->D_Entrance_Eff_L   = atof(inputdata[k++].c_str());
+   //man->D_Exit_Eff_L       = atof(inputdata[k++].c_str());
+   //man->Q3_Entrance_Eff_L  = atof(inputdata[k++].c_str());
+   //man->Q3_Exit_Eff_L      = atof(inputdata[k++].c_str());
+   //man->FP_Eff_L           = atof(inputdata[k++].c_str());
+   //man->Q1_Radius          = atof(inputdata[k++].c_str());
+   //man->D_X_Radius         = atof(inputdata[k++].c_str());
+   //man->D_Y_L              = atof(inputdata[k++].c_str());
+   //man->Q3_Entrance_Radius = atof(inputdata[k++].c_str());
+   //man->Q3_Exit_Radius     = atof(inputdata[k++].c_str());
+   //man->VDC_Res_x          = atof(inputdata[k++].c_str());
+   //man->VDC_Res_y          = atof(inputdata[k++].c_str());
+   //man->VDC_Res_th         = atof(inputdata[k++].c_str());
+   //man->VDC_Res_ph         = atof(inputdata[k++].c_str());
+   //man->D_x                = atof(inputdata[k++].c_str());
+   //man->D_y                = atof(inputdata[k++].c_str());
+   //man->delta_dp           = atof(inputdata[k++].c_str());
+   //man->delta_th           = atof(inputdata[k++].c_str());
+   //man->delta_ph           = atof(inputdata[k++].c_str());
+   //man->Which_Beam_Profile = atoi(inputdata[k++].c_str());
+   //man->raster_x_size      = atof(inputdata[k++].c_str());
+   //man->raster_y_size      = atof(inputdata[k++].c_str());
+   //man->gaus_x_sigma       = atof(inputdata[k++].c_str());
+   //man->gaus_y_sigma       = atof(inputdata[k++].c_str());
+   //man->beam_x_center      = atof(inputdata[k++].c_str());
+   //man->beam_y_center      = atof(inputdata[k++].c_str());
+   //man->z0                 = atof(inputdata[k++].c_str());
+   //man->T_L                = atof(inputdata[k++].c_str());
+   //man->T_H                = atof(inputdata[k++].c_str());
+   //man->RfunDB_FileName    = inputdata[k++];
+   //man->E0                 = atof(inputdata[k++].c_str());
+   //man->P0                 = atof(inputdata[k++].c_str());
 
    if ( man->IsDebug ) {
 
@@ -333,36 +337,38 @@ int main(int argc, char** argv) {
             break;
       }
 
-      printf("%-*s=%*s %-*s %-*s\n",  15,"samc_rootfilename",10,samc_rootfilename.c_str(),8,"",  40,"(Save Results to Root File Name)");
-      if ( !userdefgen_filename.empty() ) {
-         printf("%-*s=%*s %-*s %-*s\n",  15,"userdefgen_filename", 10, userdefgen_filename.c_str(),8,"",  40,"(User-Defined Generator File Name)");
-      }
-      printf("%-*s=%*d %-*s %-*s\n"   , 15 , "Num_Of_Events"     , 10 , Num_Of_Events     , 8 , ""    , 40 , "(Number Of Events)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "HRS_L"             , 10 , man->HRS_L             , 8 , "cm"  , 40 , "(Length of HRS)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "Q1_Exit_Eff_L"     , 10 , man->Q1_Exit_Eff_L     , 8 , "cm"  , 40 , "(Length of Magnetic)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_Entrance_Eff_L"  , 10 , man->D_Entrance_Eff_L  , 8 , "cm"  , 40 , "(Length of Magnetic)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_Exit_Eff_L"      , 10 , man->D_Exit_Eff_L      , 8 , "cm"  , 40 , "(Length of Magnetic)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "Q3_Entrance_Eff_L" , 10 , man->Q3_Entrance_Eff_L , 8 , "cm"  , 40 , "(Length of Magnetic)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "Q3_Exit_Eff_L"     , 10 , man->Q3_Exit_Eff_L     , 8 , "cm"  , 40 , "(Length of Magnetic)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "FP_Eff_L"          , 10 , man->FP_Eff_L          , 8 , "cm"  , 40 , "(Length of Magnetic)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_x"         , 10 , man->VDC_Res_x         , 8 , "cm"  , 40 , "(Resolution of VDC x)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_y"         , 10 , man->VDC_Res_y         , 8 , "cm"  , 40 , "(Resolution of VDC y)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_th"        , 10 , man->VDC_Res_th        , 8 , "mr"  , 40 , "(Resolution of VDC th)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_ph"        , 10 , man->VDC_Res_ph        , 8 , "mr"  , 40 , "(Resolution of VDC ph)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "delta_dp"          , 10 , man->delta_dp*100      , 8 , "%"   , 40 , "(full width of \xce\x94(dp) for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "delta_th"          , 10 , man->delta_th          , 8 , ""    , 40 , "(full width of \xce\x94(tan(\xce\xb8tg)) for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "delta_ph"          , 10 , man->delta_ph          , 8 , ""    , 40 , "(full width of \xce\x94(tan(\xcf\x86tg)) for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "raster_x_size"     , 10 , man->raster_x_size     , 8 , "cm"  , 40 , "(raster x full size for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "raster_y_size"     , 10 , man->raster_y_size     , 8 , "cm"  , 40 , "(raster y full size for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "beam_x_center"     , 10 , man->beam_x_center     , 8 , "cm"  , 40 , "(beam x center for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "beam_y_center"     , 10 , man->beam_y_center     , 8 , "cm"  , 40 , "(beam y center for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "z0"                , 10 , man->z0                , 8 , "cm"  , 40 , "(target center for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "T_L"               , 10 , man->T_L               , 8 , "cm"  , 40 , "(target length for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "T_H"               , 10 , man->T_H               , 8 , "cm"  , 40 , "(target height for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_x"               , 10 , man->D_x               , 8 , "cm"  , 40 , "(X offset(in TCS) between TCS and HCS)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_y"               , 10 , man->D_y               , 8 , "cm"  , 40 , "(Y offset(in TCS) between TCS and HCS)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "E0"                , 10 , man->E0                , 8 , "MeV" , 40 , "(Incident Beam Energy for generator)");
-      printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "P0"                , 10 , man->P0                , 8 , "MeV" , 40 , "(HRS Setting Momentum for generator)");
+      man->PrintConfig();
+
+      //printf("%-*s=%*s %-*s %-*s\n",  15,"samc_rootfilename",10,samc_rootfilename.c_str(),8,"",  40,"(Save Results to Root File Name)");
+      //if ( !man->fUserOutputGenFileName.empty() ) {
+      //   printf("%-*s=%*s %-*s %-*s\n",  15,"man->fUserOutputGenFileName", 10, man->fUserOutputGenFileName.c_str(),8,"",  40,"(User-Defined Generator File Name)");
+      //}
+      //printf("%-*s=%*d %-*s %-*s\n"   , 15 , "Num_Of_Events"     , 10 , Num_Of_Events     , 8 , ""    , 40 , "(Number Of Events)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "HRS_L"             , 10 , man->HRS_L             , 8 , "cm"  , 40 , "(Length of HRS)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "Q1_Exit_Eff_L"     , 10 , man->Q1_Exit_Eff_L     , 8 , "cm"  , 40 , "(Length of Magnetic)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_Entrance_Eff_L"  , 10 , man->D_Entrance_Eff_L  , 8 , "cm"  , 40 , "(Length of Magnetic)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_Exit_Eff_L"      , 10 , man->D_Exit_Eff_L      , 8 , "cm"  , 40 , "(Length of Magnetic)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "Q3_Entrance_Eff_L" , 10 , man->Q3_Entrance_Eff_L , 8 , "cm"  , 40 , "(Length of Magnetic)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "Q3_Exit_Eff_L"     , 10 , man->Q3_Exit_Eff_L     , 8 , "cm"  , 40 , "(Length of Magnetic)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "FP_Eff_L"          , 10 , man->FP_Eff_L          , 8 , "cm"  , 40 , "(Length of Magnetic)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_x"         , 10 , man->VDC_Res_x         , 8 , "cm"  , 40 , "(Resolution of VDC x)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_y"         , 10 , man->VDC_Res_y         , 8 , "cm"  , 40 , "(Resolution of VDC y)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_th"        , 10 , man->VDC_Res_th        , 8 , "mr"  , 40 , "(Resolution of VDC th)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "VDC_Res_ph"        , 10 , man->VDC_Res_ph        , 8 , "mr"  , 40 , "(Resolution of VDC ph)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "delta_dp"          , 10 , man->delta_dp*100      , 8 , "%"   , 40 , "(full width of \xce\x94(dp) for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "delta_th"          , 10 , man->delta_th          , 8 , ""    , 40 , "(full width of \xce\x94(tan(\xce\xb8tg)) for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "delta_ph"          , 10 , man->delta_ph          , 8 , ""    , 40 , "(full width of \xce\x94(tan(\xcf\x86tg)) for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "raster_x_size"     , 10 , man->raster_x_size     , 8 , "cm"  , 40 , "(raster x full size for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "raster_y_size"     , 10 , man->raster_y_size     , 8 , "cm"  , 40 , "(raster y full size for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "beam_x_center"     , 10 , man->beam_x_center     , 8 , "cm"  , 40 , "(beam x center for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "beam_y_center"     , 10 , man->beam_y_center     , 8 , "cm"  , 40 , "(beam y center for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "z0"                , 10 , man->z0                , 8 , "cm"  , 40 , "(target center for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "T_L"               , 10 , man->T_L               , 8 , "cm"  , 40 , "(target length for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "T_H"               , 10 , man->T_H               , 8 , "cm"  , 40 , "(target height for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_x"               , 10 , man->D_x               , 8 , "cm"  , 40 , "(X offset(in TCS) between TCS and HCS)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "D_y"               , 10 , man->D_y               , 8 , "cm"  , 40 , "(Y offset(in TCS) between TCS and HCS)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "E0"                , 10 , man->E0                , 8 , "MeV" , 40 , "(Incident Beam Energy for generator)");
+      //printf("%-*s=%*.2f %-*s %-*s\n" , 15 , "P0"                , 10 , man->P0                , 8 , "MeV" , 40 , "(HRS Setting Momentum for generator)");
    }
 
    if ( man->RfunDB_FileName.empty() || man->RfunDB_FileName=="NONE" ) {
@@ -379,10 +385,10 @@ int main(int argc, char** argv) {
    ifstream userdefgen_file;
    std::string comment;
    double usrgen[6];
-   if ( !userdefgen_filename.empty() ) {
-      userdefgen_file.open(userdefgen_filename.c_str());
+   if ( !man->fUserOutputGenFileName.empty() ) {
+      userdefgen_file.open(man->fUserOutputGenFileName.c_str());
       if ( !userdefgen_file.good() ) {
-         printf("[Error %s: Line %d] %s File Not Found.\n",__FILE__,__LINE__,userdefgen_filename.c_str());
+         printf("[Error %s: Line %d] %s File Not Found.\n",__FILE__,__LINE__,man->fUserOutputGenFileName.c_str());
          return 10;
       }
       getline(userdefgen_file,comment);//read comment;
@@ -532,39 +538,63 @@ int main(int argc, char** argv) {
 
    for ( i=0; i<Num_Of_Events; i++ )
    {
+      // this is crazy use of inputdata -whit
       j=k;
-      SAMCEvent* Event=new SAMCEvent();
-      Event->Id=i;
-      Event->E_s=gRandom->Gaus(E0,E0*3e-5);//beam dispersion is 3e-5
-      Event->theta=atof(inputdata[j++].c_str());
-      Event->Target.Name=inputdata[j++].c_str();
-      Event->Target.Z=atoi(inputdata[j++].c_str());
-      Event->Target.A=atof(inputdata[j++].c_str());
-      Event->Target.T=atof(inputdata[j++].c_str());
-      Event->Target.rho=atof(inputdata[j++].c_str());
-      Event->Target.L=T_L;//in HCS
-      Event->Win_i.Name=inputdata[j++].c_str();
-      Event->Win_i.Z=atoi(inputdata[j++].c_str());
-      Event->Win_i.A=atof(inputdata[j++].c_str());
-      Event->Win_i.T=atof(inputdata[j++].c_str());
-      Event->Win_i.rho=atof(inputdata[j++].c_str());
-      Event->Win_f.Name=inputdata[j++].c_str();
-      Event->Win_f.Z=atoi(inputdata[j++].c_str());
-      Event->Win_f.A=atof(inputdata[j++].c_str());
-      Event->Win_f.T=atof(inputdata[j++].c_str());
-      Event->Win_f.rho=atof(inputdata[j++].c_str());
-      Event->T_theta=atof(inputdata[j++].c_str());
-      while ( atof(inputdata[j].c_str())>=0 )
-      {
-         Event->AddOneSAMCMaterial(Event->Win_Before_Mag,atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atoi(inputdata[j++].c_str()),inputdata[j++].c_str());
+      SAMCEvent* Event   = new SAMCEvent();
+      Event->Id          = i;
+      Event->E_s         = gRandom->Gaus(E0,E0*3e-5);//beam dispersion is 3e-5
+
+      Event->theta       = man->fTheta;//atof(inputdata[j++].c_str());
+
+      // Why is this being set every event? -whit
+      Event->Target = man->fTargetMaterial;
+      Event->Win_i  = man->fMat0;
+      Event->Win_f  = man->fMat1;
+      Event->T_theta     = man->fTheta_Target;
+
+      //Event->Target.Name = inputdata[j++].c_str();
+      //Event->Target.Z    = atoi(inputdata[j++].c_str());
+      //Event->Target.A    = atof(inputdata[j++].c_str());
+      //Event->Target.T    = atof(inputdata[j++].c_str());
+      //Event->Target.rho  = atof(inputdata[j++].c_str());
+      //Event->Target.L    = T_L;//in HCS
+      //Event->Win_i.Name  = inputdata[j++].c_str();
+      //Event->Win_i.Z     = atoi(inputdata[j++].c_str());
+      //Event->Win_i.A     = atof(inputdata[j++].c_str());
+      //Event->Win_i.T     = atof(inputdata[j++].c_str());
+      //Event->Win_i.rho   = atof(inputdata[j++].c_str());
+      //Event->Win_f.Name  = inputdata[j++].c_str();
+      //Event->Win_f.Z     = atoi(inputdata[j++].c_str());
+      //Event->Win_f.A     = atof(inputdata[j++].c_str());
+      //Event->Win_f.T     = atof(inputdata[j++].c_str());
+      //Event->Win_f.rho   = atof(inputdata[j++].c_str());
+
+      // This clearly is a bug because the order for the AddOneSAMCMaterial
+      // Here this only works if it reads the line from RIGHT to LEFT
+      // I am pretty sure this is an undefined behavior for C++
+      while ( atof(inputdata[j].c_str())>=0 ) {
+         Event->AddOneSAMCMaterial(
+               Event->Win_Before_Mag,
+               atof(inputdata[j++].c_str()), //name
+               atof(inputdata[j++].c_str()), // Z
+               atof(inputdata[j++].c_str()), // A
+               atof(inputdata[j++].c_str()), // length
+               atoi(inputdata[j++].c_str()),  
+               inputdata[j++].c_str());
       }
       j++;
       while ( atof(inputdata[j].c_str())>=0 )
       {
-         Event->AddOneSAMCMaterial(Event->Win_After_Mag,atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atof(inputdata[j++].c_str()),atoi(inputdata[j++].c_str()),inputdata[j++].c_str());
+         Event->AddOneSAMCMaterial( Event->Win_After_Mag,
+                atof(inputdata[j++].c_str()),
+                atof(inputdata[j++].c_str()),
+                atof(inputdata[j++].c_str()),
+                atof(inputdata[j++].c_str()),
+                atoi(inputdata[j++].c_str()),
+                inputdata[j++].c_str());
       }
 
-      if ( !userdefgen_filename.empty() ) {
+      if ( !man->fUserOutputGenFileName.empty() ) {
          int buf_i=0;
          for ( buf_i = 0; buf_i < 6; ++buf_i ) {
             userdefgen_file>>usrgen[buf_i];
@@ -616,12 +646,12 @@ int main(int argc, char** argv) {
       else
       {
          //i-=err;//if err>0 This event is bad, simulate again. To make sure total passed number of events == one user inputs.
-         if ( Event->IsPassed==0 && userdefgen_filename.empty() ) {
+         if ( Event->IsPassed==0 && man->fUserOutputGenFileName.empty() ) {
             ++fail_events; //but also record the bad one to calculate acceptance
             //				--i;
          }
          if ( (i+1)%1000==0 || i==0 || i==(Num_Of_Events-1) ) {
-            if ( userdefgen_filename.empty() ) {
+            if ( man->fUserOutputGenFileName.empty() ) {
                printf("\t%d Good Events Simulated. And %d Bad Events Saved.\n",i+1,fail_events);
             }
             else {
@@ -692,7 +722,7 @@ int main(int argc, char** argv) {
 
       delete Event;
    }
-   if ( !userdefgen_filename.empty() ) {
+   if ( !man->fUserOutputGenFileName.empty() ) {
       userdefgen_file.close();
    }
    /*}}}*/

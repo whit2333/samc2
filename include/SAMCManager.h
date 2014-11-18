@@ -2,6 +2,7 @@
 #define SAMCManager_HH 1
 
 #include "SAMCConfig.h"
+#include "SAMCMaterial.h"
 
 #include "TNamed.h"
 #include "TObject.h"
@@ -68,8 +69,20 @@ class SAMCManager : public TObject {
       double T_H                ;//= 0;     // target height for generator(cm)
       double D_x                ;//= 0;     // X offset(in TCS) between TCS and HCS
       double D_y                ;//= 0;     // Y offset(in TCS) between TCS and HCS
+
       double E0                 ;//= 0.0;   // =incident beam energy for generator (MeV)
       double P0                 ;//= 0.0;   // =HRS Setting Momentum for generator(MeV)
+      double fTheta             ;// HRS angle
+
+
+      SAMCMaterial fTargetMaterial;
+      SAMCMaterial fMat0;
+      SAMCMaterial fMat1;
+      SAMCMaterial fMat2;
+      SAMCMaterial fMat3;
+      SAMCMaterial fMat4;
+      double fTheta_Target; // target rotation (viewed from above)
+
 
       std::string   fFile_Name;       //input file name
       std::string   RfunDB_FileName; //Rfun DB input file name
@@ -80,8 +93,13 @@ class SAMCManager : public TObject {
 
       int    fNumberOfEvents;// Number of events simulated
 
-      TFile * fOutputFile;
-      TTree * fOutputTree;
+      TFile       * fOutputFile;
+      std::string   fOutputFileName;
+      TTree       * fOutputTree;
+      std::string   fOutputTreeName;
+
+      std::string   fUserOutputGenFileName;
+
 
    protected:
 
@@ -104,7 +122,8 @@ class SAMCManager : public TObject {
       Int_t   GetVerbosity() const {return fVerbosity;}
       void    SetVerbosity(Int_t v) {fVerbosity = v;}
 
-      Int_t LoadConfig(const char * filename);
+      Int_t LoadConfig(const char * filename); // *MENU*
+      void  PrintConfig(); // *MENU*
 
       ClassDef(SAMCManager,0)
 };
