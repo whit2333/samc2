@@ -6,16 +6,17 @@
 #include "yaml-cpp/yaml.h"
 
 //ClassImp(SAMCManager)
-//_____________________________________________________________
-// A description of the class starts with the line above, and
-// will take place here !
-//
 
 SAMCManager * SAMCManager::fgSAMCManager = 0;
-//_____________________________________________________________________________
 
+//_____________________________________________________________________________
 SAMCManager::SAMCManager() {
-   fVerbosity = 2;
+
+   fVerbosity      = 2;
+   fOutputFile     = 0;
+   fOutputTree     = 0;
+   fNumberOfEvents = 0;
+
    IsDebug            = false; // output to debugfile
    IsMultiScat        = true;  // enable multi-scattering
    IsEnergyLoss       = false; // enable Energy Loss
@@ -62,13 +63,16 @@ SAMCManager::SAMCManager() {
    fXY           = NULL;
    fLineProperty = NULL;
 
-   fNumberOfEvents = 0;
 
 }
 //_____________________________________________________________________________
-
 SAMCManager::~SAMCManager(){
       fgSAMCManager=0;
 }
 //_____________________________________________________________________________
+Int_t SAMCManager::LoadConfig(const char * filename){
+      fgSAMCManager=0;
+}
+//_____________________________________________________________________________
+
 

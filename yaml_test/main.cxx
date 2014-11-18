@@ -28,7 +28,7 @@ int main() {
    }
    //}
 
-   std::cout << aNode["debug"]["MS"] <<std::endl;
+   std::cout << aNode["debug"]["MMMS"] <<std::endl;
 
 
    //for(YAML::Iterator it=doc.begin();it!=doc.end();++it) {

@@ -17,9 +17,9 @@ void usage(const char* aCommand) {
 //______________________________________________________________________________
 void getargs(int argc,char** argv) {
 
-   const char* cmd=*argv;
-   int  run_set         =  0;
-   int  seed_set        =  10000;
+   const char* cmd = *argv;
+   int  run_set    = 0;
+   int  seed_set   = 10000;
    const struct option longopts[] =
    {
       {"run",       required_argument,  0, 'r'},
@@ -266,6 +266,7 @@ int main(int argc, char** argv) {
       Num_Of_Events = atoi(inputdata[k++].c_str());
    }
 
+   // This is a nightmare!
    man->fNumberOfEvents    = Num_Of_Events;
    man->IsMultiScat        = atoi(inputdata[k++].c_str());
    man->IsEnergyLoss       = atoi(inputdata[k++].c_str());
