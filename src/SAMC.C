@@ -151,9 +151,10 @@ int ReadDatabase( const std::string& aFileName ) {
 }
 //______________________________________________________________________________
 int main(int argc, char** argv) {
+
    srand(time(NULL));
    getargs(argc,argv);
-   int i,j,k,fail_events=0;
+   int i,j,k,fail_events = 0;
 
    SAMCManager * man = SAMCManager::Instance();
 
