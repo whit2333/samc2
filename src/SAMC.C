@@ -38,11 +38,11 @@ void getargs(int argc,char** argv) {
       }
       else
       {
-         if ( SAMCManager::Instance()->File_Name.empty() )
-            SAMCManager::Instance()->File_Name=opt;
+         if ( SAMCManager::Instance()->fFile_Name.empty() )
+            SAMCManager::Instance()->fFile_Name=opt;
       }
    }
-   if ( SAMCManager::Instance()->File_Name.empty() )
+   if ( SAMCManager::Instance()->fFile_Name.empty() )
    {
       printf("[Error %s: Line %d] No File Input.\n",__FILE__,__LINE__);
       usage(cmd);
@@ -163,7 +163,7 @@ int main(int argc, char** argv) {
 
    /*Read samcfile{{{*/
    FILE* samcfile;
-   samcfile = fopen(man->File_Name.c_str(),"r");
+   samcfile = fopen(man->fFile_Name.c_str(),"r");
    char buf[CHAR_LEN];
    char data[CHAR_LEN];
 

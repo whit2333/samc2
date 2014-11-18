@@ -3,6 +3,7 @@
 #include <string>       // std::string
 #include <iostream>     // std::cout
 #include <sstream>      // std::stringstream
+#include "yaml-cpp/yaml.h"
 
 //ClassImp(SAMCManager)
 //_____________________________________________________________
@@ -54,7 +55,7 @@ SAMCManager::SAMCManager() {
    E0                 = 0.0;   // =incident beam energy for generator (MeV)
    P0                 = 0.0;   // =HRS Setting Momentum for generator(MeV)
 
-   File_Name       = ""; //input file name
+   fFile_Name       = ""; //input file name
    RfunDB_FileName = ""; //Rfun DB input file name
 
    fNCuts        = -1;

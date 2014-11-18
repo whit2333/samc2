@@ -71,7 +71,7 @@ class SAMCManager : public TObject {
       double E0                 ;//= 0.0;   // =incident beam energy for generator (MeV)
       double P0                 ;//= 0.0;   // =HRS Setting Momentum for generator(MeV)
 
-      std::string   File_Name;       //input file name
+      std::string   fFile_Name;       //input file name
       std::string   RfunDB_FileName; //Rfun DB input file name
 
       int       fNCuts        ;//= -1;
