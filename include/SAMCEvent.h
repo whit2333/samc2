@@ -85,6 +85,9 @@ class SAMCEvent {
 
    public:
 
+      void Clear(){
+      }
+
       /*Member Data from file{{{*/
       int                       Id;             // Event Id
       int                       IsPassed;       // if pass through the magnet, 1=true, 0=false(not pass)

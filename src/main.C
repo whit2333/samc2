@@ -399,6 +399,9 @@ int main(int argc, char** argv) {
    TFile* f=new TFile(samc_rootfilename.c_str(),"recreate");
    TTree* T=new TTree("SAMC","Tree with Acceptance Simulation");
 
+   SAMCEvent* Event   = new SAMCEvent();
+   T->Branch("samcEvent","SAMCEvent",&Event);
+
    /*Root output variables{{{*/
    //ro=root output
    int roId; //Event Id
@@ -544,7 +547,10 @@ int main(int argc, char** argv) {
       j=k;
 
       // This evnet should be reused!!!
-      SAMCEvent* Event   = new SAMCEvent();
+      //SAMCEvent* Event   = new SAMCEvent();
+      Event->Win_Before_Mag.clear();
+      Event->Win_After_Mag.clear();
+
       Event->Id          = i;
       Event->E_s         = gRandom->Gaus(E0,E0*3e-5);//beam dispersion is 3e-5
 
@@ -731,7 +737,7 @@ int main(int argc, char** argv) {
       if ( IsDebug && err==0 )
          Event->Print();
 
-      delete Event;
+      //delete Event;
    }
    if ( !man->fUserOutputGenFileName.empty() ) {
       userdefgen_file.close();
