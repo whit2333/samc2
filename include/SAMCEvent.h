@@ -27,7 +27,7 @@ class SAMCEvent {
       SAMCEvent(const SAMCEvent &);
       SAMCEvent& operator=(const SAMCEvent &);
 
-      int Process() ;
+      //int Process() ;
 
       void AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin, const SAMCMaterial& );
       void AddOneSAMCMaterial(std::vector<SAMCMaterial>& aWin,
@@ -41,15 +41,15 @@ class SAMCEvent {
    private:
  
       //generate original target variables
-      void Generator();
+      //void Generator();
 
       //transport to front of magnetic, then back to get refined target variables
-      int RefineTg() ;
+      //int RefineTg() ;
 
       //transfer to focal plane using John.LeRose matrix
-      int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,const double& adp) ;
+      //int ToFp(const double& ax,const double& ay,const double& ath,const double& aph,const double& adp) ;
 
-      int ReconstructTg(const double& ax,const double& ay,const double& ath,const double& aph,const double& axtg) ;
+      //int ReconstructTg(const double& ax,const double& ay,const double& ath,const double& aph,const double& axtg) ;
 
       /*Bool_t IntersectPlaneWithRay( const TVector3& xax,{{{*/
       Bool_t IntersectPlaneWithRay( const TVector3& xax,
@@ -60,25 +60,25 @@ class SAMCEvent {
                                     Double_t& length,
                                     TVector3& intersect ) ;
 
-   private:
+   public:
 
-      double Ion_Loss(const double& aE0,const SAMCMaterial& aSAMCMaterial) ;
+      //double Ion_Loss(const double& aE0,const SAMCMaterial& aSAMCMaterial) ;
 
-      double Bremss_Loss(const double& aE0,const double& abt) ;
+      //double Bremss_Loss(const double& aE0,const double& abt) ;
 
       double eta(const int& aZ); 
       double b(const int& aZ) ;
       double Rad_Len(const int& aZ,const double& aA) ;
-      void   Transport(TLorentzVector& aPos,TLorentzVector& aMom,const SAMCMaterial& aSAMCMaterial,const bool& aIsMultiScatt=false) ;
-      double MultiScattering(const double& aE,const double& aTR) ;
-      void   SetSAMCMaterial(SAMCMaterial& aSAMCMaterial) ;
-      SAMCMaterial GetMixture(const std::vector<SAMCMaterial>& aWin) ;
-      void GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const std::vector<SAMCMaterial>& aWinBefore,const std::vector<SAMCMaterial>& aWinAfter,const double& aL,const double& aOffset) ;
-      double sigma_M(const double& aE,const double& aTheta) ;
+      //void   Transport(TLorentzVector& aPos,TLorentzVector& aMom,const SAMCMaterial& aSAMCMaterial,const bool& aIsMultiScatt=false) ;
+      //double MultiScattering(const double& aE,const double& aTR) ;
+      //void   SetSAMCMaterial(SAMCMaterial& aSAMCMaterial) ;
+      //SAMCMaterial GetMixture(const std::vector<SAMCMaterial>& aWin) ;
+      //void GetRef_Plane(TLorentzVector& aoPos,TLorentzVector& aoMom,const std::vector<SAMCMaterial>& aWinBefore,const std::vector<SAMCMaterial>& aWinAfter,const double& aL,const double& aOffset) ;
+      //double sigma_M(const double& aE,const double& aTheta) ;
 
-      double CalcRValue(const double& ath,const double& aph,const double& ay,const double& adp) ;
+      //double CalcRValue(const double& ath,const double& aph,const double& ay,const double& adp) ;
 
-      double PROD_AND(const double& ax,const double& ay) ;
+      //double PROD_AND(const double& ax,const double& ay) ;
 
 
    public:

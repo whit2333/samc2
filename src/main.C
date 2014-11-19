@@ -1,5 +1,6 @@
 #include "SAMC.h"
 #include "SAMCEvent.h"
+#include "SAMCPropagator.h"
 #include "SAMCEventGenerator.h"
 #include "SAMCManager.h"
 #include "SAMCFortran.h"
@@ -431,16 +432,13 @@ int main(int argc, char** argv) {
 
    SAMCEventGenerator event_generator = SAMCEventGenerator();
    event_generator.Print();
+   SAMCPropagator  propagator = SAMCPropagator();
 
    // -------------------------------
    // Event Loop
    for(int iEvent = 0; iEvent < Num_Of_Events; iEvent++ ) {
 
-      // this is crazy use of inputdata -whit
-      //j=k;
-
-      // This evnet should be reused!!!
-      //SAMCEvent* Event   = new SAMCEvent();
+      // need to clean up event
       Event->Clear();
       Event->Win_Before_Mag.clear();
       Event->Win_After_Mag.clear();
@@ -455,47 +453,6 @@ int main(int argc, char** argv) {
       Event->Win_f  = man->fMat1;
       Event->T_theta     = man->fTheta_Target;
 
-      //Event->Target.Name = inputdata[j++].c_str();
-      //Event->Target.Z    = atoi(inputdata[j++].c_str());
-      //Event->Target.A    = atof(inputdata[j++].c_str());
-      //Event->Target.T    = atof(inputdata[j++].c_str());
-      //Event->Target.rho  = atof(inputdata[j++].c_str());
-      //Event->Target.L    = T_L;//in HCS
-      //Event->Win_i.Name  = inputdata[j++].c_str();
-      //Event->Win_i.Z     = atoi(inputdata[j++].c_str());
-      //Event->Win_i.A     = atof(inputdata[j++].c_str());
-      //Event->Win_i.T     = atof(inputdata[j++].c_str());
-      //Event->Win_i.rho   = atof(inputdata[j++].c_str());
-      //Event->Win_f.Name  = inputdata[j++].c_str();
-      //Event->Win_f.Z     = atoi(inputdata[j++].c_str());
-      //Event->Win_f.A     = atof(inputdata[j++].c_str());
-      //Event->Win_f.T     = atof(inputdata[j++].c_str());
-      //Event->Win_f.rho   = atof(inputdata[j++].c_str());
-
-      // This clearly is a bug because the order for the AddOneSAMCMaterial
-      // Here this only works if it reads the line from RIGHT to LEFT
-      // I am pretty sure this is an undefined behavior for C++
-      //while ( atof(inputdata[j].c_str())>=0 ) {
-      //   Event->AddOneSAMCMaterial(
-      //         Event->Win_Before_Mag,
-      //         atof(inputdata[j++].c_str()), 
-      //         atof(inputdata[j++].c_str()), 
-      //         atof(inputdata[j++].c_str()), 
-      //         atof(inputdata[j++].c_str()), 
-      //         atoi(inputdata[j++].c_str()),  
-      //         inputdata[j++].c_str());
-      //}
-      //j++;
-      //while ( atof(inputdata[j].c_str())>=0 )
-      //{
-      //   Event->AddOneSAMCMaterial( Event->Win_After_Mag,
-      //          atof(inputdata[j++].c_str()),
-      //          atof(inputdata[j++].c_str()),
-      //          atof(inputdata[j++].c_str()),
-      //          atof(inputdata[j++].c_str()),
-      //          atoi(inputdata[j++].c_str()),
-      //          inputdata[j++].c_str());
-      //}
 
       Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat2 );
       Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat3 );
@@ -549,8 +506,10 @@ int main(int argc, char** argv) {
          //Event->ph_tg_gen = (gRandom->Rndm()-0.5)*delta_ph;
          //Event->dp_gen    = (gRandom->Rndm()-0.5)*delta_dp;
       }
-
-      err = Event->Process();
+ 
+      propagator.InitTrack(*Event);
+      propagator.PropagateTrack(*Event);
+      //err = Event->Process();
 
       if ( err==-1 ) {
          exit(err);
