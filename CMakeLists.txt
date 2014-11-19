@@ -67,11 +67,15 @@ endif()
 
 #----------------------------------------------------------------------------
 # Find yaml-cpp (required package)
-set(YAMLCPP_LIBRARIES "-lyaml-cpp")
+set(YAMLCPP_LIBRARIES "-L/usr/local/lib -lyaml-cpp")
+set(YAML_LIBRARY_DIR "/usr/local/lib")
+set(YAML_INCLUDE_DIR "/usr/local/include")
+
 
 #-------------------------------------------------------
 set(LINK_DIRECTORIES
    ${ROOT_LIBRARY_DIR}
+   ${YAML_LIBRARY_DIR}
    )
 link_directories( ${LINK_DIRECTORIES})
 
@@ -115,8 +119,7 @@ EXECUTE_PROCESS(COMMAND root-config --evelibs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTP
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ROOT_LD_FLAGS}")
 set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -lGeomPainter -lGeom -lEve -lTreeViewer -lSpectrum -lSpectrumPainter -lFoam ")
 #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}   -Wl,-rpath-link,/home/whit/lib ")
-
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -lyaml-cpp ")
+#set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}  -lyaml-cpp ")
  
 
 set(SAMC_CXX_LIBS "-L${CMAKE_INSTALL_PREFIX}/lib -lSAMC ${SAMC_CXX_LIBS} ")
@@ -190,7 +193,7 @@ set_target_properties(SAMC PROPERTIES ${SAMC_LIBRARY_PROPERTIES})
 
 add_executable(samc2 src/main.C)
 add_dependencies(samc2 SAMC)
-target_link_libraries(samc2 ${YAMLCPP_LIBRARIES} ${ROOT_LIBRARIES} SAMC)
+target_link_libraries(samc2 ${ROOT_LIBRARIES} SAMC ${YAMLCPP_LIBRARIES})
 
 # ------------------------------------------------------------------------------
 # Install the shared libraries 

@@ -1,4 +1,5 @@
 #!/bin/bash
 
+echo "g++ -o test1 main.cxx -lm -lyaml-cpp"
 g++ -o test1 main.cxx -lm -lyaml-cpp
 
