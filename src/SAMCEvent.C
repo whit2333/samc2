@@ -4,8 +4,8 @@
 
 //______________________________________________________________________________
 SAMCEvent::SAMCEvent() {
-   IsPassed=1;
-   IsQualified=1;
+   IsPassed    = 1;
+   IsQualified = 1;
    Win_Before_Mag.clear();
    Win_After_Mag.clear();
 }
@@ -28,18 +28,20 @@ int SAMCEvent::Process() {
    Num_Event_Add = RefineTg(); // transport to front of magnetic, then back to get refined target variables
 
    if ( Num_Event_Add > 0 ) {
-      IsPassed   =0;
-      IsQualified=0;
+      IsPassed    = 0;
+      IsQualified = 0;
    } else {
       //transfer to focal plane using John.LeRose matrix
       Num_Event_Add = ToFp(x_tg_ref,y_tg_ref,th_tg_ref,ph_tg_ref,dp_ref);
    }
+
    if ( Num_Event_Add>0 ) {
-      IsPassed=0;
-      IsQualified=0;
+      IsPassed    = 0;
+      IsQualified = 0;
    } else {
       Num_Event_Add = ReconstructTg(x_fp,y_fp,th_fp,ph_fp,x_tg_ref);
    }
+
    return 0;
 }
 //______________________________________________________________________________
@@ -88,6 +90,10 @@ void SAMCEvent::Generator() {
    SetSAMCMaterial(Target);
    SetSAMCMaterial(Win_i);
    SetSAMCMaterial(Win_f);
+   //Target.Print();
+   //Win_i.Print();
+   //Win_f.Print();
+
    /*}}}*/
 
    SAMCManager * man = SAMCManager::Instance();
@@ -98,7 +104,7 @@ void SAMCEvent::Generator() {
    theta_rad   = theta*DegToRad();//rad
    s(0)        = beam_x; //cm
    s(1)        = beam_y; //cm
-   reactz_gen += -(beam_x)*tan(T_theta*DegToRad());
+   reactz_gen += -(beam_x)*TMath::Tan(T_theta*DegToRad());
    s(2)        = reactz_gen; //cm
    target_edgepoint_TRCS(0) = theta/fabs(theta)*man->T_H/2;//if theta>0,T_H/2, if<0, -T_H/2 in Target Rotation Coordinate System(T_theta=0) not TCS, check Coordinate.svg
    target_edgepoint_TRCS(1) = 0;
@@ -881,16 +887,17 @@ double SAMCEvent::MultiScattering(const double& aE,const double& aTR)
 //______________________________________________________________________________
 void SAMCEvent::SetSAMCMaterial(SAMCMaterial& aSAMCMaterial)
 {
-   aSAMCMaterial.fM=aSAMCMaterial.fA*AMU;//MeV
-   if ( aSAMCMaterial.fL==0 && aSAMCMaterial.fDensity!=0 ) {
-      aSAMCMaterial.fL=aSAMCMaterial.fT/aSAMCMaterial.fDensity;
+   aSAMCMaterial.fM = aSAMCMaterial.fA*AMU;//MeV
+   if( aSAMCMaterial.fL == 0 && aSAMCMaterial.fDensity != 0 ) {
+      aSAMCMaterial.fL = aSAMCMaterial.fT/aSAMCMaterial.fDensity;
    }
-   aSAMCMaterial.fX0=Rad_Len(aSAMCMaterial.fZ,aSAMCMaterial.fA);
-   if ( aSAMCMaterial.fX0!=0 )
-      aSAMCMaterial.fTR=aSAMCMaterial.fT/aSAMCMaterial.fX0;
-   else
-      aSAMCMaterial.fTR=0;
-   aSAMCMaterial.fbt=b(aSAMCMaterial.fZ)*aSAMCMaterial.fTR;
+   aSAMCMaterial.fX0 = Rad_Len(aSAMCMaterial.fZ,aSAMCMaterial.fA);
+   if( aSAMCMaterial.fX0 != 0 ) {
+      aSAMCMaterial.fTR = aSAMCMaterial.fT/aSAMCMaterial.fX0;
+   } else {
+      aSAMCMaterial.fTR = 0;
+   }
+   aSAMCMaterial.fbt = b(aSAMCMaterial.fZ)*aSAMCMaterial.fTR;
 }
 //______________________________________________________________________________
 SAMCMaterial SAMCEvent::GetMixture(const std::vector<SAMCMaterial>& aWin)

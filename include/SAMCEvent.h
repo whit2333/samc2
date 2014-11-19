@@ -24,9 +24,7 @@ class SAMCEvent {
    public:
       SAMCEvent();
       virtual ~SAMCEvent() ;
-
       SAMCEvent(const SAMCEvent &);
-
       SAMCEvent& operator=(const SAMCEvent &);
 
       int Process() ;
