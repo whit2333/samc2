@@ -65,43 +65,16 @@ void getargs(int argc,char** argv) {
 
       }
    }
-
    std::string theRest  = "";
    for (int i = optind; i < argc; i++) {
       theRest        += argv[i];
    }
-   std::cout << theRest << std::endl;
+   //std::cout << theRest << std::endl;
 
    if ( SAMCManager::Instance()->fFile_Name.empty() ) {
       SAMCManager::Instance()->fFile_Name = theRest;
    }
 
-   //while ( argc-- > 1 )
-   //{
-   //   const char* opt=*++argv;
-   //   if ( *opt == '-' )
-   //   {
-   //      //option
-   //      while ( *++opt != '\0' )
-   //      {
-   //         switch ( *opt )
-   //         {
-   //            case 'd':
-   //               SAMCManager::Instance()->IsDebug=true;
-   //               break;
-   //            case 'h':
-
-   //            default:
-   //               usage(cmd);
-   //         }
-   //      }
-   //   }
-   //   else
-   //   {
-   //      if ( SAMCManager::Instance()->fFile_Name.empty() )
-   //         SAMCManager::Instance()->File_Name=opt;
-   //   }
-   //}
    if ( SAMCManager::Instance()->fFile_Name.empty() )
    {
       printf("[Error %s: Line %d] No File Input.\n",__FILE__,__LINE__);
@@ -109,17 +82,17 @@ void getargs(int argc,char** argv) {
    }
 }
 //______________________________________________________________________________
-bool IsANumber(std::string aString) {
-   std::istringstream iss(aString);
-   std::ostringstream oss;
-   int x;
-   iss >> x;
-   oss << x;
-   if ( aString == oss.str() )
-      return true;
-   else
-      return false;
-}
+//bool IsANumber(std::string aString) {
+//   std::istringstream iss(aString);
+//   std::ostringstream oss;
+//   int x;
+//   iss >> x;
+//   oss << x;
+//   if ( aString == oss.str() )
+//      return true;
+//   else
+//      return false;
+//}
 //______________________________________________________________________________
 int ReadDatabase( const std::string& aFileName ) {
 
@@ -285,123 +258,14 @@ int main(int argc, char** argv) {
    }
 
    // --------------------------------------------------------
+   //
    TFile* f = new TFile(samc_rootfilename.c_str(),"recreate");
    TTree* T = new TTree("SAMC","Tree with Acceptance Simulation");
+
    SAMCEvent* Event   = new SAMCEvent();
    T->Branch("samcEvent","SAMCEvent",&Event);
 
-   /*Root output variables{{{*/
-   //ro=root output
-   //int    roId; //Event Id
-   //double rox_tg_gen;
-   //double roy_tg_gen;
-   //double roth_tg_gen;
-   //double roph_tg_gen;
-   //double roreactz_gen;
-   //double rodp_gen;
-   //double rox_tg_ref;
-   //double roy_tg_ref;
-   //double roth_tg_ref;
-   //double roph_tg_ref;
-   //double rodp_ref;
-   //double rox_fp;
-   //double roy_fp;
-   //double roth_fp;
-   //double roth_fp_no_ort;
-   //double roph_fp;
-   //double rox_tg_rec;
-   //double roy_tg_rec;
-   //double roth_tg_rec;
-   //double roph_tg_rec;
-   //double roreactz_rec;
-   //double rodp_rec;
-   //double roE_s;//=s(3) MeV
-   //double roE_p;
-   //double roTheta;
-   //double rocs_M;
-   //double rorvalue;
-   //double roq1ex_x;
-   //double roq1ex_y;
-   //double rodent_x;
-   //double rodent_y;
-   //double rodext_x;
-   //double rodext_y;
-   //double roq3en_x;
-   //double roq3en_y;
-   //double roq3ex_x;
-   //double roq3ex_y;
-   //int    roIsPassedQ1Ex;
-   //int    roIsPassedDipoleEn;
-   //int    roIsPassedDipoleEx;
-   //int    roIsPassedQ3En;
-   //int    roIsPassedQ3Ex;
 
-   //double rocs_Final;
-   //int    roIsPassed; //if the seed passes through the magnet
-   //int    roIsQualified; //if the reconstruct in the gen range
-   //double robeam_x;
-   //double robeam_y;
-   //double roAngle_rec,roQsq, roXbj;
-
-   //T->Branch("Id",&roId,"roId/I");
-   //T->Branch("x_tg_gen",&rox_tg_gen,"rox_tg_gen/D");
-   //T->Branch("y_tg_gen",&roy_tg_gen,"roy_tg_gen/D");
-   //T->Branch("th_tg_gen",&roth_tg_gen,"roth_tg_gen/D");
-   //T->Branch("ph_tg_gen",&roph_tg_gen,"roph_tg_gen/D");
-   //T->Branch("reactz_gen",&roreactz_gen,"roreactz_gen/D");
-   //T->Branch("dp_gen",&rodp_gen,"rodp_gen/D");
-   //T->Branch("x_tg_ref",&rox_tg_ref,"rox_tg_ref/D");
-   //T->Branch("y_tg_ref",&roy_tg_ref,"roy_tg_ref/D");
-   //T->Branch("th_tg_ref",&roth_tg_ref,"roth_tg_ref/D");
-   //T->Branch("ph_tg_ref",&roph_tg_ref,"roph_tg_ref/D");
-   //T->Branch("dp_ref",&rodp_ref,"rodp_ref/D");
-   //T->Branch("x_fp",&rox_fp,"rox_fp/D");
-   //T->Branch("y_fp",&roy_fp,"roy_fp/D");
-   //T->Branch("th_fp",&roth_fp,"roth_fp/D");
-   //T->Branch("th_fp_no_ort",&roth_fp_no_ort,"roth_fp_no_ort/D");
-   //T->Branch("ph_fp",&roph_fp,"roph_fp/D");
-   //T->Branch("x_tg_rec",&rox_tg_rec,"rox_tg_rec/D");
-   //T->Branch("y_tg_rec",&roy_tg_rec,"roy_tg_rec/D");
-   //T->Branch("th_tg_rec",&roth_tg_rec,"roth_tg_rec/D");
-   //T->Branch("ph_tg_rec",&roph_tg_rec,"roph_tg_rec/D");
-   //T->Branch("reactz_rec",&roreactz_rec,"roreactz_rec/D");
-   //T->Branch("dp_rec",&rodp_rec,"rodp_rec/D");
-   //T->Branch("E_s",&roE_s,"roE_s/D");
-   //T->Branch("E_p",&roE_p,"roE_p/D");
-   //T->Branch("Theta",&roTheta,"roTheta/D");
-   //T->Branch("cs_M",&rocs_M,"rocs_M/D");
-   //T->Branch("rvalue",&rorvalue,"rorvalue/D");
-   //T->Branch("q1ex_x",&roq1ex_x,"roq1ex_x/D");
-   //T->Branch("dent_x",&rodent_x,"rodent_x/D");
-   //T->Branch("dext_x",&rodext_x,"rodext_x/D");
-   //T->Branch("q3en_x",&roq3en_x,"roq3en_x/D");
-   //T->Branch("q3ex_x",&roq3ex_x,"roq3ex_x/D");
-   //T->Branch("q1ex_y",&roq1ex_y,"roq1ex_y/D");
-   //T->Branch("dent_y",&rodent_y,"rodent_y/D");
-   //T->Branch("dext_y",&rodext_y,"rodext_y/D");
-   //T->Branch("q3en_y",&roq3en_y,"roq3en_y/D");
-   //T->Branch("q3ex_y",&roq3ex_y,"roq3ex_y/D");
-   //T->Branch("IsPassedQ1Ex",&roIsPassedQ1Ex,"roIsPassedQ1Ex/I");
-   //T->Branch("IsPassedDipoleEn",&roIsPassedDipoleEn,"roIsPassedDipoleEn/I");
-   //T->Branch("IsPassedDipoleEx",&roIsPassedDipoleEx,"roIsPassedDipoleEx/I");
-   //T->Branch("IsPassedQ3En",&roIsPassedQ3En,"roIsPassedQ3En/I");
-   //T->Branch("IsPassedQ3Ex",&roIsPassedQ3Ex,"roIsPassedQ3Ex/I");
-
-   //T->Branch("cs_Final",&rocs_Final,"rocs_Final/D");
-   //T->Branch("IsPassed",&roIsPassed,"roIsPassed/I");
-   //T->Branch("IsQualified",&roIsQualified,"roIsQualified/I");
-   //T->Branch("beam_x",&robeam_x,"robeam_x/D");
-   //T->Branch("beam_y",&robeam_y,"robeam_y/D");
-
-   //Add Angle_rec,Q2 and Xbj --Z. Ye, 10/19/2011
-   //These are calculated based on reconstructed quantities
-   //T->Branch("Angle_rec",&roAngle_rec,"roAngle_rec/D");//Diff from Angle which is from generated quantities
-   //T->Branch("Qsq",&roQsq,"roQsq/D");//Diff from Q2 which is from generated quantities
-   //T->Branch("Xbj",&roXbj,"roXbj/D");
-
-   /*}}}*/
-
-   /*Process Event by Event{{{*/
    TStopwatch timer;
    timer.Start();
 
@@ -412,6 +276,7 @@ int main(int argc, char** argv) {
    //only init rfunction once
    left_init_r_function_();
    right_init_r_function_();
+
    fail_events=0;
 
    bool   IsDebug             = man->IsDebug            ;//= false; // output to debugfile
@@ -430,15 +295,16 @@ int main(int argc, char** argv) {
    double T_L                 = man->T_L                ;// target length for generator(cm)
    double T_H                 = man->T_H                ;// target height for generator(cm)
 
+   // Create the event generator and track propagator
    SAMCEventGenerator event_generator = SAMCEventGenerator();
+   SAMCPropagator     propagator      = SAMCPropagator();
    event_generator.Print();
-   SAMCPropagator  propagator = SAMCPropagator();
 
    // -------------------------------
    // Event Loop
    for(int iEvent = 0; iEvent < Num_Of_Events; iEvent++ ) {
 
-      // need to clean up event
+      // TODO: need to clean up event class
       Event->Clear();
       Event->Win_Before_Mag.clear();
       Event->Win_After_Mag.clear();
@@ -448,11 +314,10 @@ int main(int argc, char** argv) {
       Event->theta       = man->fTheta;//atof(inputdata[j++].c_str());
 
       // Why is this being set every event? -whit
-      Event->Target = man->fTargetMaterial;
-      Event->Win_i  = man->fMat0;
-      Event->Win_f  = man->fMat1;
-      Event->T_theta     = man->fTheta_Target;
-
+      Event->Target     = man->fTargetMaterial;
+      Event->Win_i      = man->fMat0;
+      Event->Win_f      = man->fMat1;
+      Event->T_theta    = man->fTheta_Target;
 
       Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat2 );
       Event->AddOneSAMCMaterial( Event->Win_Before_Mag, man->fMat3 );
@@ -479,128 +344,44 @@ int main(int argc, char** argv) {
 
          event_generator.GenerateEvent(*Event);
 
-         //if ( Which_Beam_Profile==0 ) {
-         //   Event->beam_x = beam_x_center+(gRandom->Rndm()-0.5)*raster_x_size;
-         //   Event->beam_y = beam_y_center+(gRandom->Rndm()-0.5)*raster_y_size;
-         //}
-         //else if ( Which_Beam_Profile==1 ) {
-         //   Event->beam_x = gRandom->Gaus(beam_x_center,gaus_x_sigma);
-         //   Event->beam_y = gRandom->Gaus(beam_y_center,gaus_y_sigma);
-         //}
-         //else if ( Which_Beam_Profile==2 ) {
-         //   Event->beam_x = beam_x_center+(gRandom->Rndm()-0.5)*raster_x_size;
-         //   Event->beam_y = beam_y_center+(gRandom->Rndm()-0.5)*raster_y_size;
-         //   Event->beam_x = gRandom->Gaus(Event->beam_x,gaus_x_sigma);
-         //   Event->beam_y = gRandom->Gaus(Event->beam_y,gaus_y_sigma);
-         //}
-
-         //Event->reactz_gen = z0+(gRandom->Rndm()-0.5)*T_L;
-         //cout<<"---DEBUG---"<<endl;
-         //cout<<"z0="<<z0<<endl;
-         //cout<<"T_L="<<T_L<<endl;
-         //cout<<"beam_x="<<Event->beam_x<<endl;
-         //cout<<"reactz_gen="<<Event->reactz_gen<<endl;
-         //cout<<"T_theta="<<Event->T_theta<<endl;
-         //cout<<"-----------"<<endl;
-         //Event->th_tg_gen = (gRandom->Rndm()-0.5)*delta_th;
-         //Event->ph_tg_gen = (gRandom->Rndm()-0.5)*delta_ph;
-         //Event->dp_gen    = (gRandom->Rndm()-0.5)*delta_dp;
       }
  
       propagator.InitTrack(*Event);
-      propagator.PropagateTrack(*Event);
-      //err = Event->Process();
 
-      if ( err==-1 ) {
-         exit(err);
-      } else {
-         //i-=err;//if err>0 This event is bad, simulate again. To make sure total passed number of events == one user inputs.
-         if ( Event->IsPassed==0 && man->fUserOutputGenFileName.empty() ) {
-            ++fail_events; //but also record the bad one to calculate acceptance
-            //				--i;
-         }
-         if ( ( iEvent+1 )%1000==0 || iEvent==0 || iEvent==(Num_Of_Events-1) ) {
-            if ( man->fUserOutputGenFileName.empty() ) {
-               printf("\t%d Good Events Simulated. And %d Bad Events Saved.\n",iEvent+1,fail_events);
-            }
-            else {
-               printf("\t%d User-Defined Events Simulated.\n",iEvent+1);
-            }
-         }
-         /*Save results to TTree{{{*/
-         //roId               = Event->Id;
-         //rox_tg_gen         = Event->x_tg_gen/100;
-         //roy_tg_gen         = Event->y_tg_gen/100;
-         //roth_tg_gen        = Event->th_tg_gen;
-         //roph_tg_gen        = Event->ph_tg_gen;
-         //roreactz_gen       = Event->reactz_gen/100;
-         //rodp_gen           = Event->dp_gen;
-         //rox_tg_ref         = Event->x_tg_ref/100;
-         //roy_tg_ref         = Event->y_tg_ref/100;
-         //roth_tg_ref        = Event->th_tg_ref;
-         //roph_tg_ref        = Event->ph_tg_ref;
-         //rodp_ref           = Event->dp_ref;
-         //rox_fp             = Event->x_fp/100;
-         //roy_fp             = Event->y_fp/100;
-         //roth_fp            = Event->th_fp;
-         //roth_fp_no_ort     = Event->th_fp_no_ort;
-         //roph_fp            = Event->ph_fp;
-         //rox_tg_rec         = Event->x_tg_rec/100;//cm->meter
-         //roy_tg_rec         = Event->y_tg_rec/100;
-         //roth_tg_rec        = Event->th_tg_rec;
-         //roph_tg_rec        = Event->ph_tg_rec;
-         //roreactz_rec       = Event->reactz_rec/100;
-         //rodp_rec           = Event->dp_rec;
-         //roE_s              = Event->E_s/1000;//MeV to GeV
-         //roE_p              = Event->E_p/1000;
-         //roTheta            = Event->Angle*RadToDeg();
-         //rocs_M             = Event->cs_M;
-         //rorvalue           = Event->rvalue;
-         //roq1ex_x           = Event->q1ex[0];
-         //rodent_x           = Event->dent[0];
-         //rodext_x           = Event->dext[0];
-         //roq3en_x           = Event->q3en[0];
-         //roq3ex_x           = Event->q3ex[0];
-         //roq1ex_y           = Event->q1ex[1];
-         //rodent_y           = Event->dent[1];
-         //rodext_y           = Event->dext[1];
-         //roq3en_y           = Event->q3en[1];
-         //roq3ex_y           = Event->q3ex[1];
-         //roIsPassedQ1Ex     = Event->IsPassedQ1Ex;
-         //roIsPassedDipoleEn = Event->IsPassedDipoleEn;
-         //roIsPassedDipoleEx = Event->IsPassedDipoleEx;
-         //roIsPassedQ3En     = Event->IsPassedQ3En;
-         //roIsPassedQ3Ex     = Event->IsPassedQ3Ex;
+      err = propagator.PropagateTrack(*Event);
 
-         //rocs_Final    = Event->cs_Final;
-         //roIsPassed    = Event->IsPassed;
-         //roIsQualified = Event->IsQualified;
-         //robeam_x      = Event->beam_x/100;//cm to m
-         //robeam_y      = Event->beam_y/100;//cm to m
-
-         //roAngle_rec   = Event->Angle_rec;
-         //roQsq         = Event->Qsq;
-         //roXbj         = Event->Xbj;
-
-         T->Fill();
-
+      if ( err ) { exit(err); }
+      if ( IsDebug && err==0 ) {
+         Event->Print();
       }
 
-      if ( IsDebug && err==0 ) Event->Print();
+      T->Fill();
 
-   }
+      //i-=err;//if err>0 This event is bad, simulate again. To make sure total passed number of events == one user inputs.
+      if ( Event->IsPassed==0 && man->fUserOutputGenFileName.empty() ) {
+         ++fail_events; //but also record the bad one to calculate acceptance
+         //				--i;
+      }
+      if ( ( iEvent+1 )%1000==0 || iEvent==0 || iEvent==(Num_Of_Events-1) ) {
+         if ( man->fUserOutputGenFileName.empty() ) {
+            printf("\t%d Good Events Simulated. And %d Bad Events Saved.\n",iEvent+1,fail_events);
+         }
+         else {
+            printf("\t%d User-Defined Events Simulated.\n",iEvent+1);
+         }
+      }
+
+   } // end of event loop
 
    if ( !man->fUserOutputGenFileName.empty() ) {
       userdefgen_file.close();
    }
-   /*}}}*/
 
    T->Write();
    delete T;
    f->Close();
    delete f;
 
-   //inputdata.clear();
    printf("Results saved at %s\n",samc_rootfilename.c_str());
    printf("Time at the end of job = %f seconds\n",timer.CpuTime());
 
