@@ -396,8 +396,8 @@ int main(int argc, char** argv) {
       getline(userdefgen_file,comment);//read comment;
 
    }
-   TFile* f=new TFile(samc_rootfilename.c_str(),"recreate");
-   TTree* T=new TTree("SAMC","Tree with Acceptance Simulation");
+   TFile* f = new TFile(samc_rootfilename.c_str(),"recreate");
+   TTree* T = new TTree("SAMC","Tree with Acceptance Simulation");
 
    SAMCEvent* Event   = new SAMCEvent();
    T->Branch("samcEvent","SAMCEvent",&Event);
@@ -612,33 +612,33 @@ int main(int argc, char** argv) {
       Event->AddOneSAMCMaterial( Event->Win_After_Mag, man->fMat6 );
 
       if ( !man->fUserOutputGenFileName.empty() ) {
-         int buf_i=0;
+         int buf_i = 0;
          for ( buf_i = 0; buf_i < 6; ++buf_i ) {
             userdefgen_file>>usrgen[buf_i];
          }
-         Event->beam_x=usrgen[0];
-         Event->beam_y=usrgen[1];
-         Event->reactz_gen=usrgen[2]+z0;//Add offset from the seed, for HRS-R only, Z. Ye 07/26/2013
-         Event->th_tg_gen=usrgen[3];
-         Event->ph_tg_gen=usrgen[4];
-         Event->dp_gen=usrgen[5];
-      }
-      else {
+         Event->beam_x     = usrgen[0];
+         Event->beam_y     = usrgen[1];
+         Event->reactz_gen = usrgen[2]+z0;//Add offset from the seed, for HRS-R only, Z. Ye 07/26/2013
+         Event->th_tg_gen  = usrgen[3];
+         Event->ph_tg_gen  = usrgen[4];
+         Event->dp_gen     = usrgen[5];
+      } else {
+
          if ( Which_Beam_Profile==0 ) {
-            Event->beam_x=beam_x_center+(gRandom->Rndm()-0.5)*raster_x_size;
-            Event->beam_y=beam_y_center+(gRandom->Rndm()-0.5)*raster_y_size;
+            Event->beam_x = beam_x_center+(gRandom->Rndm()-0.5)*raster_x_size;
+            Event->beam_y = beam_y_center+(gRandom->Rndm()-0.5)*raster_y_size;
          }
          else if ( Which_Beam_Profile==1 ) {
-            Event->beam_x=gRandom->Gaus(beam_x_center,gaus_x_sigma);
-            Event->beam_y=gRandom->Gaus(beam_y_center,gaus_y_sigma);
+            Event->beam_x = gRandom->Gaus(beam_x_center,gaus_x_sigma);
+            Event->beam_y = gRandom->Gaus(beam_y_center,gaus_y_sigma);
          }
          else if ( Which_Beam_Profile==2 ) {
-            Event->beam_x=beam_x_center+(gRandom->Rndm()-0.5)*raster_x_size;
-            Event->beam_y=beam_y_center+(gRandom->Rndm()-0.5)*raster_y_size;
-            Event->beam_x=gRandom->Gaus(Event->beam_x,gaus_x_sigma);
-            Event->beam_y=gRandom->Gaus(Event->beam_y,gaus_y_sigma);
+            Event->beam_x = beam_x_center+(gRandom->Rndm()-0.5)*raster_x_size;
+            Event->beam_y = beam_y_center+(gRandom->Rndm()-0.5)*raster_y_size;
+            Event->beam_x = gRandom->Gaus(Event->beam_x,gaus_x_sigma);
+            Event->beam_y = gRandom->Gaus(Event->beam_y,gaus_y_sigma);
          }
-         Event->reactz_gen=z0+(gRandom->Rndm()-0.5)*T_L;
+         Event->reactz_gen = z0+(gRandom->Rndm()-0.5)*T_L;
          //cout<<"---DEBUG---"<<endl;
          //cout<<"z0="<<z0<<endl;
          //cout<<"T_L="<<T_L<<endl;
@@ -646,22 +646,15 @@ int main(int argc, char** argv) {
          //cout<<"reactz_gen="<<Event->reactz_gen<<endl;
          //cout<<"T_theta="<<Event->T_theta<<endl;
          //cout<<"-----------"<<endl;
-         Event->th_tg_gen=(gRandom->Rndm()-0.5)*delta_th;
-         Event->ph_tg_gen=(gRandom->Rndm()-0.5)*delta_ph;
-         Event->dp_gen=(gRandom->Rndm()-0.5)*delta_dp;
+         Event->th_tg_gen = (gRandom->Rndm()-0.5)*delta_th;
+         Event->ph_tg_gen = (gRandom->Rndm()-0.5)*delta_ph;
+         Event->dp_gen    = (gRandom->Rndm()-0.5)*delta_dp;
       }
 
-      err=Event->Process();
-      if ( err==-1 )
-      {
+      err = Event->Process();
+      if ( err==-1 ) {
          exit(err);
-      }
-      //else if ( err>0 && Event->IsPassed==1 )
-      //{
-      //	i-=err;//This event is bad, simulate again. To make sure total good number of events == one user inputs.
-      //}
-      else
-      {
+      } else {
          //i-=err;//if err>0 This event is bad, simulate again. To make sure total passed number of events == one user inputs.
          if ( Event->IsPassed==0 && man->fUserOutputGenFileName.empty() ) {
             ++fail_events; //but also record the bad one to calculate acceptance
@@ -676,69 +669,68 @@ int main(int argc, char** argv) {
             }
          }
          /*Save results to TTree{{{*/
-         roId=Event->Id;
-         rox_tg_gen=Event->x_tg_gen/100;
-         roy_tg_gen=Event->y_tg_gen/100;
-         roth_tg_gen=Event->th_tg_gen;
-         roph_tg_gen=Event->ph_tg_gen;
-         roreactz_gen=Event->reactz_gen/100;
-         rodp_gen=Event->dp_gen;
-         rox_tg_ref=Event->x_tg_ref/100;
-         roy_tg_ref=Event->y_tg_ref/100;
-         roth_tg_ref=Event->th_tg_ref;
-         roph_tg_ref=Event->ph_tg_ref;
-         rodp_ref=Event->dp_ref;
-         rox_fp=Event->x_fp/100;
-         roy_fp=Event->y_fp/100;
-         roth_fp=Event->th_fp;
-         roth_fp_no_ort=Event->th_fp_no_ort;
-         roph_fp=Event->ph_fp;
-         rox_tg_rec=Event->x_tg_rec/100;//cm->meter
-         roy_tg_rec=Event->y_tg_rec/100;
-         roth_tg_rec=Event->th_tg_rec;
-         roph_tg_rec=Event->ph_tg_rec;
-         roreactz_rec=Event->reactz_rec/100;
-         rodp_rec=Event->dp_rec;
-         roE_s=Event->E_s/1000;//MeV to GeV
-         roE_p=Event->E_p/1000;
-         roTheta=Event->Angle*RadToDeg();
-         rocs_M=Event->cs_M;
-         rorvalue=Event->rvalue;
-         roq1ex_x=Event->q1ex[0];
-         rodent_x=Event->dent[0];
-         rodext_x=Event->dext[0];
-         roq3en_x=Event->q3en[0];
-         roq3ex_x=Event->q3ex[0];
-         roq1ex_y=Event->q1ex[1];
-         rodent_y=Event->dent[1];
-         rodext_y=Event->dext[1];
-         roq3en_y=Event->q3en[1];
-         roq3ex_y=Event->q3ex[1];
-         roIsPassedQ1Ex=Event->IsPassedQ1Ex;
-         roIsPassedDipoleEn=Event->IsPassedDipoleEn;
-         roIsPassedDipoleEx=Event->IsPassedDipoleEx;
-         roIsPassedQ3En=Event->IsPassedQ3En;
-         roIsPassedQ3Ex=Event->IsPassedQ3Ex;
+         roId               = Event->Id;
+         rox_tg_gen         = Event->x_tg_gen/100;
+         roy_tg_gen         = Event->y_tg_gen/100;
+         roth_tg_gen        = Event->th_tg_gen;
+         roph_tg_gen        = Event->ph_tg_gen;
+         roreactz_gen       = Event->reactz_gen/100;
+         rodp_gen           = Event->dp_gen;
+         rox_tg_ref         = Event->x_tg_ref/100;
+         roy_tg_ref         = Event->y_tg_ref/100;
+         roth_tg_ref        = Event->th_tg_ref;
+         roph_tg_ref        = Event->ph_tg_ref;
+         rodp_ref           = Event->dp_ref;
+         rox_fp             = Event->x_fp/100;
+         roy_fp             = Event->y_fp/100;
+         roth_fp            = Event->th_fp;
+         roth_fp_no_ort     = Event->th_fp_no_ort;
+         roph_fp            = Event->ph_fp;
+         rox_tg_rec         = Event->x_tg_rec/100;//cm->meter
+         roy_tg_rec         = Event->y_tg_rec/100;
+         roth_tg_rec        = Event->th_tg_rec;
+         roph_tg_rec        = Event->ph_tg_rec;
+         roreactz_rec       = Event->reactz_rec/100;
+         rodp_rec           = Event->dp_rec;
+         roE_s              = Event->E_s/1000;//MeV to GeV
+         roE_p              = Event->E_p/1000;
+         roTheta            = Event->Angle*RadToDeg();
+         rocs_M             = Event->cs_M;
+         rorvalue           = Event->rvalue;
+         roq1ex_x           = Event->q1ex[0];
+         rodent_x           = Event->dent[0];
+         rodext_x           = Event->dext[0];
+         roq3en_x           = Event->q3en[0];
+         roq3ex_x           = Event->q3ex[0];
+         roq1ex_y           = Event->q1ex[1];
+         rodent_y           = Event->dent[1];
+         rodext_y           = Event->dext[1];
+         roq3en_y           = Event->q3en[1];
+         roq3ex_y           = Event->q3ex[1];
+         roIsPassedQ1Ex     = Event->IsPassedQ1Ex;
+         roIsPassedDipoleEn = Event->IsPassedDipoleEn;
+         roIsPassedDipoleEx = Event->IsPassedDipoleEx;
+         roIsPassedQ3En     = Event->IsPassedQ3En;
+         roIsPassedQ3Ex     = Event->IsPassedQ3Ex;
 
-         rocs_Final=Event->cs_Final;
-         roIsPassed=Event->IsPassed;
-         roIsQualified=Event->IsQualified;
-         robeam_x=Event->beam_x/100;//cm to m
-         robeam_y=Event->beam_y/100;//cm to m
+         rocs_Final    = Event->cs_Final;
+         roIsPassed    = Event->IsPassed;
+         roIsQualified = Event->IsQualified;
+         robeam_x      = Event->beam_x/100;//cm to m
+         robeam_y      = Event->beam_y/100;//cm to m
 
-         roAngle_rec = Event->Angle_rec;
-         roQsq = Event->Qsq;
-         roXbj = Event->Xbj;
+         roAngle_rec   = Event->Angle_rec;
+         roQsq         = Event->Qsq;
+         roXbj         = Event->Xbj;
 
          T->Fill();
-         /*}}}*/
+
       }
 
-      if ( IsDebug && err==0 )
-         Event->Print();
+      if ( IsDebug && err==0 ) Event->Print();
 
-      //delete Event;
    }
+
    if ( !man->fUserOutputGenFileName.empty() ) {
       userdefgen_file.close();
    }
