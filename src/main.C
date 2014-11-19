@@ -548,6 +548,7 @@ int main(int argc, char** argv) {
 
       // This evnet should be reused!!!
       //SAMCEvent* Event   = new SAMCEvent();
+      Event->Clear();
       Event->Win_Before_Mag.clear();
       Event->Win_After_Mag.clear();
 
@@ -652,6 +653,7 @@ int main(int argc, char** argv) {
       }
 
       err = Event->Process();
+
       if ( err==-1 ) {
          exit(err);
       } else {

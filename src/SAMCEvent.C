@@ -28,7 +28,7 @@ int SAMCEvent::Process() {
    Num_Event_Add = RefineTg(); // transport to front of magnetic, then back to get refined target variables
 
    if ( Num_Event_Add > 0 ) {
-      IsPassed=0;
+      IsPassed   =0;
       IsQualified=0;
    } else {
       //transfer to focal plane using John.LeRose matrix

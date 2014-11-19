@@ -86,6 +86,8 @@ class SAMCEvent {
    public:
 
       void Clear(){
+         IsPassed    = 1;
+         IsQualified = 1;
       }
 
       /*Member Data from file{{{*/
