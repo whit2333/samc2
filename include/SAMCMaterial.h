@@ -1,6 +1,7 @@
 #ifndef SAMCMaterial_HH
-#define SAMCMaterial_HH
+#define SAMCMaterial_HH 1
 
+#include <iostream>
 #include "TNamed.h"
 
 class SAMCMaterial : public TNamed {
@@ -9,6 +10,8 @@ class SAMCMaterial : public TNamed {
 
       SAMCMaterial();
       virtual ~SAMCMaterial();
+
+      void Print(Option_t * opt =""); // *MENU*
 
       SAMCMaterial(const SAMCMaterial& v) ;
       const SAMCMaterial& operator=(const SAMCMaterial& v) ;

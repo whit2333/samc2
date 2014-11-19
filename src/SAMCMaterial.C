@@ -44,6 +44,19 @@ const SAMCMaterial& SAMCMaterial::operator=(const SAMCMaterial& v) {
    }
    return *this;
 }
-//___________________________________________________________________
+//______________________________________________________________________________
+void SAMCMaterial::Print(Option_t * ) {
+   std::cout << " - Material : " << GetName() << std::endl;
+   std::cout << "   fZ       : " << fZ       << std::endl;
+   std::cout << "   fA       : " << fA       << std::endl;
+   std::cout << "   fM       : " << fM       << std::endl;
+   std::cout << "   fDensity : " << fDensity << std::endl;
+   std::cout << "   fT       : " << fT       << std::endl;
+   std::cout << "   fTR      : " << fTR      << std::endl;
+   std::cout << "   fbt      : " << fbt      << std::endl;
+   std::cout << "   fX0      : " << fX0      << std::endl;
+   std::cout << "   fL       : " << fL       << std::endl;
 
+}
+//______________________________________________________________________________
 

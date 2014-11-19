@@ -117,7 +117,7 @@ Int_t SAMCManager::LoadConfig(const char * filename){
    z0                 = aNode["monte_carlo_parameters"]["target_center_z0"].as<double>();
    T_L                = aNode["monte_carlo_parameters"]["target_length"].as<double>();
    T_H                = aNode["monte_carlo_parameters"]["target_height"].as<double>();
-   RfunDB_FileName    = aNode["monte_carlo_parameters"]["run_db_filename"].as<std::string>();
+   RfunDB_FileName    = "";//aNode["monte_carlo_parameters"]["run_db_filename"].as<std::string>();
 
    E0                 = aNode["HRS_settings"]["Es"].as<double>();
    P0                 = aNode["HRS_settings"]["P0"].as<double>();
