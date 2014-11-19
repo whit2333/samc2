@@ -4,8 +4,8 @@
 
 //______________________________________________________________________________
 SAMCEvent::SAMCEvent() {
-   IsPassed=1;
-   IsQualified=1;
+   IsPassed    = 1;
+   IsQualified = 1;
    Win_Before_Mag.clear();
    Win_After_Mag.clear();
 }
@@ -881,15 +881,16 @@ double SAMCEvent::MultiScattering(const double& aE,const double& aTR)
 //______________________________________________________________________________
 void SAMCEvent::SetSAMCMaterial(SAMCMaterial& aSAMCMaterial)
 {
-   aSAMCMaterial.fM=aSAMCMaterial.fA*AMU;//MeV
+   aSAMCMaterial.fM = aSAMCMaterial.fA*AMU; //MeV
    if ( aSAMCMaterial.fL==0 && aSAMCMaterial.fDensity!=0 ) {
-      aSAMCMaterial.fL=aSAMCMaterial.fT/aSAMCMaterial.fDensity;
+      aSAMCMaterial.fL = aSAMCMaterial.fT/aSAMCMaterial.fDensity;
    }
-   aSAMCMaterial.fX0=Rad_Len(aSAMCMaterial.fZ,aSAMCMaterial.fA);
-   if ( aSAMCMaterial.fX0!=0 )
-      aSAMCMaterial.fTR=aSAMCMaterial.fT/aSAMCMaterial.fX0;
-   else
-      aSAMCMaterial.fTR=0;
+   aSAMCMaterial.fX0 = Rad_Len(aSAMCMaterial.fZ,aSAMCMaterial.fA);
+   if ( aSAMCMaterial.fX0 != 0 ) {
+      aSAMCMaterial.fTR = aSAMCMaterial.fT/aSAMCMaterial.fX0;
+   } else {
+      aSAMCMaterial.fTR = 0;
+   }
    aSAMCMaterial.fbt=b(aSAMCMaterial.fZ)*aSAMCMaterial.fTR;
 }
 //______________________________________________________________________________
