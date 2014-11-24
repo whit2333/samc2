@@ -190,12 +190,11 @@ int main(int argc, char** argv) {
 
    getargs(argc,argv);
 
-   //int i,j,k,
-   //k = 0;
    int fail_events = 0;
 
    SAMCManager * man = SAMCManager::Instance();
-   man->LoadConfig(man->fFile_Name.c_str());
+
+   man->LoadConfig( man->fFile_Name.c_str() );
 
    std::string samc_rootfilename   = man->fOutputFileName;
    std::string userdefgen_filename = ""; // Not sure what this is really used for -whit
