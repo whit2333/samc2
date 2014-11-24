@@ -6,6 +6,8 @@ set(General_files
    SAMCManager
    SAMCEventGenerator
    SAMCPropagator
+   SAMCMatrixElement
+   SAMCAnalyzerOptics
    #withxycollimator
    )
 set(General_SRCS)
