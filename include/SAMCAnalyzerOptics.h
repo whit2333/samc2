@@ -28,7 +28,6 @@ class SAMCAnalyzerOptics{
       SAMCAnalyzerOptics();
       ~SAMCAnalyzerOptics();
 
-      void Init();
       void ClearVectors();
       void LoadData(int); 
       void PrintMatrixElement(std::string); 

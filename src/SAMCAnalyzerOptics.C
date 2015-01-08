@@ -2,17 +2,13 @@
 
 //______________________________________________________________________________
 SAMCAnalyzerOptics::SAMCAnalyzerOptics(){
-   Init();
+   fOpticsPackage = 0;
+   fP0            = -1;
+   fScatAngle     = 0;
 }
 //_________________________________________________________________________________
 SAMCAnalyzerOptics::~SAMCAnalyzerOptics(){
    ClearVectors();
-}
-//_________________________________________________________________________________
-void SAMCAnalyzerOptics::Init(){
-   fOpticsPackage=0;
-   fP0 = -1;
-   fScatAngle=0; 
 }
 //_________________________________________________________________________________
 void SAMCAnalyzerOptics::ClearVectors(){
@@ -69,9 +65,9 @@ void SAMCAnalyzerOptics::LoadData(int FileIndex){
    ME.SetPolyOrder(0);
 
    std::string iVar;
-   int SIZE;
-   int iOpt,iDEG,iI,iJ,iK;
-   double iVal1,iVal2,iVal3,iVal4,iVal5,iVal6,iVal7; 
+   int         SIZE;
+   int         iOpt,iDEG,iI,iJ,iK;
+   double      iVal1,iVal2,iVal3,iVal4,iVal5,iVal6,iVal7; 
    std::vector<int> E;
    std::vector<double> V;
 

@@ -309,6 +309,7 @@ void SAMCPropagator::InitTrack(SAMCEvent& event) {
 }
 //______________________________________________________________________________
 int SAMCPropagator::RefineTg(SAMCEvent& event) {
+
    //return Number of Event needs to be added. just 1 ^_^
    //refine target variables from Generator because John.LeRose matrix only works for vacuum
    //know Win_Before_Mag,p_TCS,p_P_TCS

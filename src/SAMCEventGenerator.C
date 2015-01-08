@@ -55,6 +55,7 @@ void SAMCEventGenerator::Init(){
 }
 //______________________________________________________________________________
 Int_t SAMCEventGenerator::GenerateEvent(SAMCEvent& event){
+
    if ( fBeamProfileType == 0 ) {
       event.beam_x = fBeamXCenter + (gRandom->Rndm()-0.5)*fRasterXSize;
       event.beam_y = fBeamYCenter + (gRandom->Rndm()-0.5)*fRasterYSize;

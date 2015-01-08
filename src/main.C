@@ -9,12 +9,10 @@
 
 //______________________________________________________________________________
 void usage(const char* aCommand) {
-   printf("--------------------\n");
-   printf("%-*s%s -dh filename\n",10,"Usage:",aCommand);
-   printf("%-*s -d debug\n",10," ");
-   printf("%-*s -h help\n",10," ");
-   printf("%-*s filename: absolute file location\n",10," ");
-   exit(8);
+   std::cout << "Usage   : samc [option] file.config" << std::endl;
+   std::cout << "Options : " << std::endl;
+   std::cout << "  --verbose,-v      verbose output  " << std::endl;
+   exit(64);
 }
 //______________________________________________________________________________
 void getargs(int argc,char** argv) {
@@ -75,8 +73,7 @@ void getargs(int argc,char** argv) {
       SAMCManager::Instance()->fFile_Name = theRest;
    }
 
-   if ( SAMCManager::Instance()->fFile_Name.empty() )
-   {
+   if ( SAMCManager::Instance()->fFile_Name.empty() ) {
       printf("[Error %s: Line %d] No File Input.\n",__FILE__,__LINE__);
       usage(cmd);
    }
@@ -94,106 +91,109 @@ void getargs(int argc,char** argv) {
 //      return false;
 //}
 //______________________________________________________________________________
-int ReadDatabase( const std::string& aFileName ) {
-
-   const int LEN = 200;
-
-   char buf[LEN];
-
-   // Read data from database
-
-   FILE* fi = fopen( aFileName.c_str(),"r" );
-   if( !fi ) return -1;
-
-   int i,j,k;
-   j=0;
-   while ( fgets(buf,LEN,fi) )
-   {
-      i=0;
-      while ( buf[i]==' ' )
-      {
-         ++i;
-      }
-      if ( buf[i]!='#' )
-      {
-         ++j;
-      }
-      //else it's comment, skipped
-   }
-   fclose(fi);
-
-   SAMCManager::Instance()->fNCuts=j;
-
-   if ( SAMCManager::Instance()->fXY ) {
-      for ( i = 0; i < NELEMENTS; ++i ) {
-         delete [] SAMCManager::Instance()->fXY[i];
-      }
-      delete [] SAMCManager::Instance()->fXY;
-   }
-   if ( SAMCManager::Instance()->fLineProperty ) {
-      for ( i = 0; i < 3; ++i ) {
-         delete [] SAMCManager::Instance()->fLineProperty[i];
-      }
-      delete [] SAMCManager::Instance()->fLineProperty;
-   }
-
-   SAMCManager::Instance()->fXY=new int*[SAMCManager::Instance()->fNCuts];
-   SAMCManager::Instance()->fLineProperty=new double*[SAMCManager::Instance()->fNCuts];
-   for ( i = 0; i < SAMCManager::Instance()->fNCuts; ++i ) {
-      SAMCManager::Instance()->fXY[i]=new int[NELEMENTS];
-      SAMCManager::Instance()->fLineProperty[i]=new double[3];
-   }
-   fi = fopen(aFileName.c_str(),"r");
-   j=0;
-   while ( fgets(buf,LEN,fi) )
-   {
-      i=0;
-      while ( buf[i]==' ' )
-      {
-         ++i;
-      }
-      if ( buf[i]!='#' )
-      {
-         k=0;
-         while ( k<NELEMENTS ) {
-            if ( buf[i]=='0' || buf[i]=='1' ) {
-               //printf("#%c\n",buf[i]);
-               SAMCManager::Instance()->fXY[j][k++]=atoi(&buf[i]);
-               buf[i]=' ';
-            }
-            ++i;
-         }
-         //printf("####%s\n",buf);
-         sscanf ( buf, "%lf %lf %lf", &(SAMCManager::Instance()->fLineProperty)[j][LINE_SLOPE],&(SAMCManager::Instance()->fLineProperty)[j][LINE_INTERSECTION],&(SAMCManager::Instance()->fLineProperty)[j][LINE_SIGN] );  
-         ++j;
-      }
-      //else it's comment, skipped
-   }
-   fclose(fi);
-   //printf("fNCuts=%d\n",fNCuts);
-   //for ( i = 0; i < fNCuts; ++i ) {
-   //	for ( j = 0; j < NELEMENTS; ++j ) {
-   //		printf("%d ",fXY[i][j]);
-   //	}
-   //	for ( j = 0; j < 3; ++j ) {
-   //		printf("%g ",fLineProperty[i][j]);
-   //	}
-   //	printf("\n");
-   //}
-   //printf("---------------------\n");
-   return 0;
-}
+//int ReadDatabase( const std::string& aFileName ) {
+//
+//   const int LEN = 200;
+//
+//   char buf[LEN];
+//
+//   // Read data from database
+//
+//   FILE* fi = fopen( aFileName.c_str(),"r" );
+//   if( !fi ) return -1;
+//
+//   int i,j,k;
+//   j=0;
+//   while ( fgets(buf,LEN,fi) )
+//   {
+//      i=0;
+//      while ( buf[i]==' ' )
+//      {
+//         ++i;
+//      }
+//      if ( buf[i]!='#' )
+//      {
+//         ++j;
+//      }
+//      //else it's comment, skipped
+//   }
+//   fclose(fi);
+//
+//   SAMCManager::Instance()->fNCuts=j;
+//
+//   if ( SAMCManager::Instance()->fXY ) {
+//      for ( i = 0; i < NELEMENTS; ++i ) {
+//         delete [] SAMCManager::Instance()->fXY[i];
+//      }
+//      delete [] SAMCManager::Instance()->fXY;
+//   }
+//   if ( SAMCManager::Instance()->fLineProperty ) {
+//      for ( i = 0; i < 3; ++i ) {
+//         delete [] SAMCManager::Instance()->fLineProperty[i];
+//      }
+//      delete [] SAMCManager::Instance()->fLineProperty;
+//   }
+//
+//   SAMCManager::Instance()->fXY=new int*[SAMCManager::Instance()->fNCuts];
+//   SAMCManager::Instance()->fLineProperty=new double*[SAMCManager::Instance()->fNCuts];
+//   for ( i = 0; i < SAMCManager::Instance()->fNCuts; ++i ) {
+//      SAMCManager::Instance()->fXY[i]=new int[NELEMENTS];
+//      SAMCManager::Instance()->fLineProperty[i]=new double[3];
+//   }
+//   fi = fopen(aFileName.c_str(),"r");
+//   j=0;
+//   while ( fgets(buf,LEN,fi) )
+//   {
+//      i=0;
+//      while ( buf[i]==' ' )
+//      {
+//         ++i;
+//      }
+//      if ( buf[i]!='#' )
+//      {
+//         k=0;
+//         while ( k<NELEMENTS ) {
+//            if ( buf[i]=='0' || buf[i]=='1' ) {
+//               //printf("#%c\n",buf[i]);
+//               SAMCManager::Instance()->fXY[j][k++]=atoi(&buf[i]);
+//               buf[i]=' ';
+//            }
+//            ++i;
+//         }
+//         //printf("####%s\n",buf);
+//         sscanf ( buf, "%lf %lf %lf", &(SAMCManager::Instance()->fLineProperty)[j][LINE_SLOPE],&(SAMCManager::Instance()->fLineProperty)[j][LINE_INTERSECTION],&(SAMCManager::Instance()->fLineProperty)[j][LINE_SIGN] );  
+//         ++j;
+//      }
+//      //else it's comment, skipped
+//   }
+//   fclose(fi);
+//   //printf("fNCuts=%d\n",fNCuts);
+//   //for ( i = 0; i < fNCuts; ++i ) {
+//   //	for ( j = 0; j < NELEMENTS; ++j ) {
+//   //		printf("%d ",fXY[i][j]);
+//   //	}
+//   //	for ( j = 0; j < 3; ++j ) {
+//   //		printf("%g ",fLineProperty[i][j]);
+//   //	}
+//   //	printf("\n");
+//   //}
+//   //printf("---------------------\n");
+//   return 0;
+//}
 //______________________________________________________________________________
 int main(int argc, char** argv) {
 
-   srand(time(NULL));
-
+   // Get the command line arguments and set the manditory config file input
    getargs(argc,argv);
 
-   int fail_events = 0;
+   //Set the Seed using CPU Time, but not fix the seed,
+   //to avoid same random values in different runs.
+   srand(time(NULL));
+   gRandom->SetSeed(0);
 
+
+   // 
    SAMCManager * man = SAMCManager::Instance();
-
    man->LoadConfig( man->fFile_Name.c_str() );
 
    std::string samc_rootfilename   = man->fOutputFileName;
@@ -202,17 +202,7 @@ int main(int argc, char** argv) {
 
 
    if ( man->IsDebug ) {
-      if ( man->IsMultiScat ){
-         printf("Multi-Scattering Enabled.\n");
-      } else{
-         printf("Multi-Scattering Disabled.\n");
-      }
-
-      if ( man->IsEnergyLoss ){
-         printf("Energy Loss Enabled.\n");
-      } else {
-         printf("Energy Loss Disabled.\n");
-      }
+      man->PrintConfig();
 
       switch ( man->Which_Kin ) {
          case 1:
@@ -227,25 +217,24 @@ int main(int argc, char** argv) {
             break;
       }
 
-      man->PrintConfig();
    }
 
    //man->RfunDB_FileName = "";
-   std::cout << man->RfunDB_FileName << std::endl;
+   std::cout << "RfunDB_FileName : " << man->RfunDB_FileName << std::endl;
 
    if ( man->RfunDB_FileName.empty() || man->RfunDB_FileName=="NONE" ) {
       man->fNCuts=0;
    } else {
-      if( ReadDatabase(man->RfunDB_FileName) ) {
-         printf("[Error %s: Line %d] %s Rfun DB File Not Found.\n",__FILE__,__LINE__,man->RfunDB_FileName.c_str());
-         return 11;
-      }
+      //if( ReadDatabase(man->RfunDB_FileName) ) {
+         printf("[Error %s: Line %d] %s Rfun DB File usage not yet implemented... sorry!\n",__FILE__,__LINE__,man->RfunDB_FileName.c_str());
+         return 78;
+      //}
    }
 
-   int err = 0;
-   ifstream userdefgen_file;
+   int         err = 0;
+   ifstream    userdefgen_file;
    std::string comment;
-   double usrgen[6];
+   double      usrgen[6];
 
    if ( !man->fUserOutputGenFileName.empty() ) {
       userdefgen_file.open(man->fUserOutputGenFileName.c_str());
@@ -257,27 +246,22 @@ int main(int argc, char** argv) {
    }
 
    // --------------------------------------------------------
-   //
+   // Open output file and create new tree
    TFile* f = new TFile(samc_rootfilename.c_str(),"recreate");
    TTree* T = new TTree("SAMC","Tree with Acceptance Simulation");
 
    SAMCEvent* Event   = new SAMCEvent();
    T->Branch("samcEvent","SAMCEvent",&Event);
 
-
    TStopwatch timer;
    timer.Start();
 
-   //Set the Seed using CPU Time, but not fix the seed,
-   //to avoid same random values in different runs.
-   gRandom->SetSeed(0);
-
-   //only init rfunction once
+   // TODO: should this be here?
+   // only init rfunction once
    left_init_r_function_();
    right_init_r_function_();
 
-   fail_events=0;
-
+   int    fail_events         = 0;
    bool   IsDebug             = man->IsDebug            ;//= false; // output to debugfile
    double E0                  = man->E0;
    int    Which_Beam_Profile  = man->Which_Beam_Profile;
@@ -294,10 +278,15 @@ int main(int argc, char** argv) {
    double T_L                 = man->T_L                ;// target length for generator(cm)
    double T_H                 = man->T_H                ;// target height for generator(cm)
 
-   // Create the event generator and track propagator
+   // Create the event generator
+   // The event generator is responsible for the initial random event at the target
    SAMCEventGenerator event_generator = SAMCEventGenerator();
-   SAMCPropagator     propagator      = SAMCPropagator();
    event_generator.Print();
+
+   // Create track propagator
+   // The track propagator is responsisble for moving (forward) through the spectrometer
+   SAMCPropagator     propagator      = SAMCPropagator();
+
 
    // -------------------------------
    // Event Loop

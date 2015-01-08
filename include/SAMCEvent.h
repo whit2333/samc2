@@ -93,11 +93,11 @@ class SAMCEvent {
       int                       IsPassed;       // if pass through the magnet, 1=true, 0=false(not pass)
       int                       IsQualified;    // if rec var is in the range of gen, 1=true, 0=false(not qualified)
       double                    theta;          // scattering angle(deg)
-      SAMCMaterial              Target;         // target SAMCMaterial
-      SAMCMaterial              Win_i;          // front[inital] window, stick with target
-      SAMCMaterial              Win_f;          // back[final] window, stick with target
-      std::vector<SAMCMaterial> Win_Before_Mag; // windows after target and before magnetic
-      std::vector<SAMCMaterial> Win_After_Mag;  // windows after target and after magnetic
+      //SAMCMaterial              Target;         // target SAMCMaterial
+      //SAMCMaterial              Win_i;          // front[inital] window, stick with target
+      //SAMCMaterial              Win_f;          // back[final] window, stick with target
+      //std::vector<SAMCMaterial> Win_Before_Mag; // windows after target and before magnetic
+      //std::vector<SAMCMaterial> Win_After_Mag;  // windows after target and after magnetic
       double                    T_theta;        // target angle(deg), the central line of target is along beam
       //----
       //|  |

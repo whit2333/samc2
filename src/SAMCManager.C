@@ -187,6 +187,9 @@ Int_t SAMCManager::LoadConfig(const char * filename){
    fMat6.fDensity = aNode["windows"]["before_FP_density"].as<double>();
    fMat6.fX0      = aNode["windows"]["before_FP_RL"].as<double>();
 
+   Double_t someNewvariable           = aNode["someNewvariable"].as<double>();
+
+   std::cout << "Some new variable is " << someNewvariable << std::endl;
    return 0;
 }
 //_____________________________________________________________________________

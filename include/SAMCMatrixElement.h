@@ -11,12 +11,12 @@
 class SAMCMatrixElement {
 
    private: 
-      bool fIsZero;              // whether or not the element is zero
-      int fOrder;                // order of the polynomial 
-      int fDefaultPolyOrder;     // default order of the polynomial 
-      double fV;                 // its computed value
-      std::vector<int> fPW;           // exponents of matrix element (e.g., D100 = { 1, 0, 0 })
-      std::vector<double> fPoly;      // the associated polynomial
+      bool                 fIsZero;           // whether or not the element is zero
+      int                  fOrder;            // order of the polynomial
+      int                  fDefaultPolyOrder; // default order of the polynomial
+      double               fV;                // its computed value
+      std::vector<int>     fPW;               // exponents of matrix element (e.g., D100 = { 1, 0, 0 })
+      std::vector<double>  fPoly;             // the associated polynomial
 
    public:
       SAMCMatrixElement();
